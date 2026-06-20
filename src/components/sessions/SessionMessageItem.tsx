@@ -3,11 +3,6 @@ import { ChevronDown, ChevronUp, Copy } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type { SessionMessage } from "@/types";
 import {
@@ -50,43 +45,34 @@ export const SessionMessageItem = memo(function SessionMessageItem({
   return (
     <div
       className={cn(
-        "rounded-lg border px-3 py-2.5 relative group transition-shadow min-w-0",
-        message.role.toLowerCase() === "user"
-          ? "bg-primary/5 border-primary/20 ml-8"
-          : message.role.toLowerCase() === "assistant"
-            ? "bg-blue-500/5 border-blue-500/20 mr-8"
-            : "bg-muted/40 border-border/60",
-        isActive && "ring-2 ring-primary ring-offset-2",
+        "group relative -mx-2 rounded-lg px-3 py-3 transition-colors min-w-0",
+        isActive && "bg-primary/[0.04]",
       )}
     >
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-2 right-2 size-6 opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={() => onCopy(message.content)}
-          >
-            <Copy className="size-3" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          {t("sessionManager.copyMessage", {
-            defaultValue: "复制内容",
-          })}
-        </TooltipContent>
-      </Tooltip>
-      <div className="flex items-center justify-between text-xs mb-1.5 pr-6">
-        <span className={cn("font-semibold", getRoleTone(message.role))}>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-2 right-1 size-6 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-foreground"
+        onClick={() => onCopy(message.content)}
+        aria-label={t("sessionManager.copyMessage", {
+          defaultValue: "复制内容",
+        })}
+      >
+        <Copy className="size-3" />
+      </Button>
+      <div className="flex items-center gap-2 mb-1 pr-6">
+        <span
+          className={cn("text-xs font-semibold", getRoleTone(message.role))}
+        >
           {getRoleLabel(message.role, t)}
         </span>
         {message.ts && (
-          <span className="text-muted-foreground">
+          <span className="text-[11px] text-muted-foreground/70">
             {formatTimestamp(message.ts)}
           </span>
         )}
       </div>
-      <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-relaxed min-w-0">
+      <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-sm leading-relaxed min-w-0 text-foreground/90">
         {searchQuery
           ? highlightText(displayContent, searchQuery)
           : displayContent}

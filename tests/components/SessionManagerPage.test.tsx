@@ -75,27 +75,16 @@ const renderPage = () => {
 };
 
 const openSearch = () => {
-  const searchButton = Array.from(screen.getAllByRole("button")).find(
-    (button) => button.querySelector(".lucide-search"),
-  );
-
-  if (!searchButton) {
-    throw new Error("Search button not found");
-  }
-
-  fireEvent.click(searchButton);
+  // 搜索框已常驻，直接聚焦即可
+  const input = screen.getByRole("textbox");
+  input.focus();
 };
 
 const closeSearch = () => {
-  const closeButton = Array.from(screen.getAllByRole("button")).find(
-    (button) => button.querySelector(".lucide-x"),
-  );
-
-  if (!closeButton) {
-    throw new Error("Search close button not found");
-  }
-
-  fireEvent.click(closeButton);
+  // 搜索框常驻后没有关闭按钮，清空内容即可
+  fireEvent.change(screen.getByRole("textbox"), {
+    target: { value: "" },
+  });
 };
 
 describe("SessionManagerPage", () => {

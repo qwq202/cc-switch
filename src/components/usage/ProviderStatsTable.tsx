@@ -36,11 +36,13 @@ export function ProviderStatsTable({
   );
 
   if (isLoading) {
-    return <div className="h-[400px] animate-pulse rounded bg-gray-100" />;
+    return (
+      <div className="h-[400px] animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-800" />
+    );
   }
 
   return (
-    <div className="rounded-lg border border-border/50 bg-card/40 backdrop-blur-sm overflow-hidden">
+    <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-[0_1px_3px_rgba(0,0,0,0.01)] overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
@@ -67,7 +69,7 @@ export function ProviderStatsTable({
             <TableRow>
               <TableCell
                 colSpan={6}
-                className="text-center text-muted-foreground"
+                className="text-center text-muted-foreground py-12"
               >
                 {t("usage.noData", "暂无数据")}
               </TableCell>

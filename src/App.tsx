@@ -929,8 +929,8 @@ function App() {
           return <AgentsDefaultsPanel />;
         default:
           return (
-            <div className="px-6 flex flex-col flex-1 min-h-0 overflow-hidden items-center">
-              <div className="w-full max-w-5xl flex-1 overflow-y-auto overflow-x-hidden pb-12 px-1">
+            <div className="px-6 flex flex-col flex-1 min-h-0 overflow-hidden items-stretch">
+              <div className="w-full max-w-6xl mx-auto flex-1 overflow-y-auto overflow-x-hidden pb-12 px-1">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeApp}
@@ -1176,7 +1176,7 @@ function App() {
       >
         {/* Main Content Header */}
         {currentView !== "settings" && (
-          <header className="h-20 shrink-0 flex items-center justify-between px-8 border-b border-black/5">
+          <header className="h-20 shrink-0 flex items-center justify-between px-8 border-b border-black/5 dark:border-white/5">
             <div className="flex items-center gap-1">
               {currentView !== "providers" ? (
                 <div className="flex items-center gap-4">
@@ -1190,7 +1190,7 @@ function App() {
                           : "providers",
                       )
                     }
-                    className="rounded-full hover:bg-black/5"
+                    className="rounded-full hover:bg-black/5 dark:hover:bg-white/5"
                   >
                     <ArrowLeft className="w-5 h-5" />
                   </Button>

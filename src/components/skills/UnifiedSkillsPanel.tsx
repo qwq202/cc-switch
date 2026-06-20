@@ -8,7 +8,6 @@ import {
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   type ImportSkillSelection,
@@ -406,8 +405,8 @@ const UnifiedSkillsPanel = React.forwardRef<
           </div>
         ) : !skills || skills.length === 0 ? (
           <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
-              <Sparkles size={24} className="text-muted-foreground" />
+            <div className="w-16 h-16 mx-auto mb-4 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center">
+              <Sparkles size={24} className="text-muted-foreground/60" />
             </div>
             <h3 className="text-lg font-medium text-foreground mb-2">
               {t("skills.noInstalled")}
@@ -418,7 +417,7 @@ const UnifiedSkillsPanel = React.forwardRef<
           </div>
         ) : (
           <TooltipProvider delayDuration={300}>
-            <div className="rounded-xl border border-border-default overflow-hidden">
+            <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-[0_1px_3px_rgba(0,0,0,0.01)] overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-900">
               {skills.map((skill, index) => (
                 <InstalledSkillListItem
                   key={skill.id}
@@ -518,7 +517,7 @@ const InstalledSkillListItem: React.FC<InstalledSkillListItemProps> = ({
     <ListItemRow isLast={isLast}>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="font-medium text-sm text-foreground truncate">
+          <span className="font-medium text-sm text-zinc-800 dark:text-zinc-200 truncate">
             {skill.name}
           </span>
           {skill.readmeUrl && (
@@ -530,21 +529,18 @@ const InstalledSkillListItem: React.FC<InstalledSkillListItemProps> = ({
               <ExternalLink size={12} />
             </button>
           )}
-          <span className="text-xs text-muted-foreground/50 flex-shrink-0">
+          <span className="text-xs text-zinc-400 dark:text-zinc-500 flex-shrink-0">
             {sourceLabel}
           </span>
           {hasUpdate && (
-            <Badge
-              variant="outline"
-              className="shrink-0 text-[10px] px-1.5 py-0 h-4 border-amber-500 text-amber-600 dark:text-amber-400"
-            >
+            <span className="shrink-0 inline-flex items-center rounded-sm bg-amber-500/10 px-1.5 h-4 text-[10px] font-medium text-amber-600 dark:text-amber-400">
               {t("skills.updateAvailable")}
-            </Badge>
+            </span>
           )}
         </div>
         {skill.description && (
           <p
-            className="text-xs text-muted-foreground truncate"
+            className="text-xs text-zinc-400 dark:text-zinc-500 truncate"
             title={skill.description}
           >
             {skill.description}
@@ -567,7 +563,7 @@ const InstalledSkillListItem: React.FC<InstalledSkillListItemProps> = ({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-7 w-7 hover:text-blue-500 hover:bg-blue-100 dark:hover:text-blue-400 dark:hover:bg-blue-500/10"
+            className="h-7 w-7 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-900/5 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-white/5"
             onClick={onUpdate}
             disabled={isUpdating}
             title={t("skills.update")}
@@ -583,7 +579,7 @@ const InstalledSkillListItem: React.FC<InstalledSkillListItemProps> = ({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-7 w-7 hover:text-red-500 hover:bg-red-100 dark:hover:text-red-400 dark:hover:bg-red-500/10"
+          className="h-7 w-7 rounded-lg text-zinc-500 hover:text-red-600 hover:bg-red-500/10 dark:text-zinc-400 dark:hover:text-red-400 dark:hover:bg-red-500/15"
           onClick={onUninstall}
           title={t("skills.uninstall")}
         >

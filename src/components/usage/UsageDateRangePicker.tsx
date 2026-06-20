@@ -28,8 +28,6 @@ interface UsageDateRangePickerProps {
   triggerLabel: string;
 }
 
-/* ── helpers ── */
-
 function startOfDay(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
@@ -50,22 +48,16 @@ function fromTs(ts: number): Date {
   return new Date(ts * 1000);
 }
 
-function fmtDate(ts: number): string {
-  const d = fromTs(ts);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
 function fmtTime(ts: number): string {
   const d = fromTs(ts);
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
-function parseDateInput(ts: number, value: string): number {
-  const [y, m, d] = value.split("-").map(Number);
-  if (!Number.isFinite(y) || !Number.isFinite(m) || !Number.isFinite(d))
-    return ts;
-  const base = fromTs(ts);
-  return toTs(new Date(y, m - 1, d, base.getHours(), base.getMinutes()));
+function fmtShortDate(ts: number, locale: string): string {
+  return fromTs(ts).toLocaleDateString(locale, {
+    month: "numeric",
+    day: "numeric",
+  });
 }
 
 function parseTimeInput(ts: number, value: string): number {
@@ -101,8 +93,6 @@ function getCalendarDays(month: Date): Date[] {
   });
 }
 
-/* ── component ── */
-
 export function UsageDateRangePicker({
   selection,
   onApply,
@@ -117,6 +107,9 @@ export function UsageDateRangePicker({
   );
   const [draftStart, setDraftStart] = useState(resolvedRange.startDate);
   const [draftEnd, setDraftEnd] = useState(resolvedRange.endDate);
+  const [draftPreset, setDraftPreset] = useState<UsageRangePreset | null>(
+    selection.preset !== "custom" ? selection.preset : null,
+  );
   const [displayMonth, setDisplayMonth] = useState(
     () =>
       new Date(
@@ -130,12 +123,12 @@ export function UsageDateRangePicker({
   const language = i18n.resolvedLanguage || i18n.language || "en";
   const locale = getLocaleFromLanguage(language);
 
-  // Reset draft when popover opens
   useEffect(() => {
     if (!open) return;
     const r = resolveUsageRange(selection);
     setDraftStart(r.startDate);
     setDraftEnd(r.endDate);
+    setDraftPreset(selection.preset !== "custom" ? selection.preset : null);
     setDisplayMonth(
       new Date(
         fromTs(r.startDate).getFullYear(),
@@ -165,10 +158,11 @@ export function UsageDateRangePicker({
   const startDay = fromTs(draftStart);
   const endDay = fromTs(draftEnd);
   const today = new Date();
+  const sameDay = isSameDay(startDay, endDay);
 
-  /* Pick a date from the calendar */
   const handleDatePick = (day: Date) => {
     setError(null);
+    setDraftPreset(null);
     const nextTs = setDateKeepTime(
       activeField === "start" ? draftStart : draftEnd,
       day,
@@ -176,23 +170,17 @@ export function UsageDateRangePicker({
 
     if (activeField === "start") {
       setDraftStart(nextTs);
-      // Auto-swap if start > end
       if (nextTs > draftEnd) {
         setDraftEnd(nextTs);
       }
-      // Auto-advance to end field
+      setActiveField("end");
+    } else if (nextTs < draftStart) {
+      setDraftStart(nextTs);
       setActiveField("end");
     } else {
-      // If picked end < start, treat as new start and auto-advance
-      if (nextTs < draftStart) {
-        setDraftStart(nextTs);
-        setActiveField("end");
-      } else {
-        setDraftEnd(nextTs);
-      }
+      setDraftEnd(nextTs);
     }
 
-    // Navigate calendar if the day is outside the displayed month
     if (
       day.getMonth() !== displayMonth.getMonth() ||
       day.getFullYear() !== displayMonth.getFullYear()
@@ -201,75 +189,38 @@ export function UsageDateRangePicker({
     }
   };
 
+  const handlePresetPick = (preset: (typeof PRESETS)[number]) => {
+    setError(null);
+    const r = resolveUsageRange({ preset });
+    setDraftPreset(preset);
+    setDraftStart(r.startDate);
+    setDraftEnd(r.endDate);
+    setDisplayMonth(
+      new Date(
+        fromTs(r.startDate).getFullYear(),
+        fromTs(r.startDate).getMonth(),
+        1,
+      ),
+    );
+    setActiveField("start");
+  };
+
   const handleApply = () => {
     setError(null);
     if (draftStart > draftEnd) {
       setError(t("usage.invalidTimeRangeOrder", "开始时间不能晚于结束时间"));
       return;
     }
-    onApply({
-      preset: "custom",
-      customStartDate: draftStart,
-      customEndDate: draftEnd,
-    });
+    if (draftPreset && PRESETS.includes(draftPreset)) {
+      onApply({ preset: draftPreset });
+    } else {
+      onApply({
+        preset: "custom",
+        customStartDate: draftStart,
+        customEndDate: draftEnd,
+      });
+    }
     setOpen(false);
-  };
-
-  const goToToday = () => {
-    setDisplayMonth(new Date(today.getFullYear(), today.getMonth(), 1));
-  };
-
-  /* ── Field card (start / end) ── */
-  const renderField = (field: DraftField) => {
-    const isActive = activeField === field;
-    const ts = field === "start" ? draftStart : draftEnd;
-    const setTs = field === "start" ? setDraftStart : setDraftEnd;
-    const label =
-      field === "start"
-        ? t("usage.startTime", "开始时间")
-        : t("usage.endTime", "结束时间");
-
-    return (
-      <div
-        className={cn(
-          "rounded-lg border px-3 py-2 cursor-pointer transition-all",
-          isActive
-            ? "border-primary ring-1 ring-primary/30 bg-primary/5"
-            : "border-border/50 hover:border-border",
-        )}
-        onClick={() => setActiveField(field)}
-      >
-        <div className="mb-1.5 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
-          {label}
-        </div>
-        <div className="flex items-center gap-1.5">
-          <Input
-            type="date"
-            className="h-7 flex-1 border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
-            value={fmtDate(ts)}
-            onChange={(e) => {
-              const next = parseDateInput(ts, e.target.value);
-              setTs(next);
-              const d = fromTs(next);
-              setDisplayMonth(new Date(d.getFullYear(), d.getMonth(), 1));
-              setError(null);
-            }}
-            onFocus={() => setActiveField(field)}
-          />
-          <Input
-            type="time"
-            step={60}
-            className="h-7 w-[90px] flex-none border-0 bg-transparent p-0 text-sm shadow-none focus-visible:ring-0"
-            value={fmtTime(ts)}
-            onChange={(e) => {
-              setTs(parseTimeInput(ts, e.target.value));
-              setError(null);
-            }}
-            onFocus={() => setActiveField(field)}
-          />
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -277,168 +228,226 @@ export function UsageDateRangePicker({
       <PopoverTrigger asChild>
         <Button
           type="button"
-          variant={selection.preset === "custom" ? "default" : "outline"}
-          className="h-9 w-[100px] justify-start gap-1.5 text-xs"
+          variant="outline"
+          className={cn(
+            "h-9 min-w-[100px] justify-between gap-1.5 rounded-lg border-border/70 bg-background px-2.5 text-xs font-medium shadow-none",
+            selection.preset === "custom" &&
+              "border-primary/40 bg-primary/5 text-primary",
+          )}
           title={triggerLabel}
         >
-          <CalendarDays className="h-4 w-4 shrink-0" />
-          <span className="truncate flex-1">{triggerLabel}</span>
-          <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-50" />
+          <span className="flex min-w-0 items-center gap-1.5">
+            <CalendarDays className="h-3.5 w-3.5 shrink-0 opacity-70" />
+            <span className="truncate">{triggerLabel}</span>
+          </span>
+          <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-40" />
         </Button>
       </PopoverTrigger>
+
       <PopoverContent
-        className="w-[340px] max-w-[calc(100vw-2rem)] p-3 sm:w-[620px]"
+        className="w-[236px] overflow-hidden rounded-lg border-border/70 p-0 shadow-md"
         align="end"
+        sideOffset={4}
       >
-        {/* Preset shortcuts */}
-        <div className="flex flex-wrap gap-1.5 pb-2 border-b border-border/40">
+        {/* 快捷预设：预览范围，点确定后生效 */}
+        <div className="grid grid-cols-5 gap-0.5 border-b border-border/50 p-1.5">
           {PRESETS.map((preset) => (
-            <Button
+            <button
               key={preset}
               type="button"
-              size="sm"
-              variant={selection.preset === preset ? "default" : "outline"}
-              className="h-7 px-2.5 text-xs"
-              onClick={() => {
-                onApply({ preset });
-                setOpen(false);
-              }}
+              className={cn(
+                "h-6 rounded text-[10px] font-medium transition-colors",
+                draftPreset === preset
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:bg-muted/70 hover:text-foreground",
+              )}
+              onClick={() => handlePresetPick(preset)}
             >
               {getUsageRangePresetLabel(preset, t)}
-            </Button>
+            </button>
           ))}
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row">
-          {/* Left: date fields */}
-          <div className="space-y-2 sm:w-[250px] sm:flex-none">
-            <p className="text-xs text-muted-foreground">
-              {t("usage.customRangeHint", "支持日期与时间，最长 30 天")}
-            </p>
-            {renderField("start")}
-            {renderField("end")}
-
-            {error && <p className="text-xs text-destructive">{error}</p>}
-
-            <div className="flex gap-2 pt-1">
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="flex-1"
-                onClick={() => setOpen(false)}
-              >
-                {t("common.cancel")}
-              </Button>
-              <Button
-                type="button"
-                size="sm"
-                className="flex-1"
-                onClick={handleApply}
-              >
-                {t("common.confirm")}
-              </Button>
-            </div>
+        {/* 日历 */}
+        <div className="px-1.5 pt-1.5 pb-1">
+          <div className="mb-0.5 flex items-center justify-between">
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              className="h-6 w-6"
+              onClick={() =>
+                setDisplayMonth(
+                  new Date(
+                    displayMonth.getFullYear(),
+                    displayMonth.getMonth() - 1,
+                    1,
+                  ),
+                )
+              }
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+            </Button>
+            <span className="text-[11px] font-medium tabular-nums">
+              {displayMonth.toLocaleDateString(locale, {
+                year: "numeric",
+                month: "short",
+              })}
+            </span>
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              className="h-6 w-6"
+              onClick={() =>
+                setDisplayMonth(
+                  new Date(
+                    displayMonth.getFullYear(),
+                    displayMonth.getMonth() + 1,
+                    1,
+                  ),
+                )
+              }
+            >
+              <ChevronRight className="h-3.5 w-3.5" />
+            </Button>
           </div>
 
-          {/* Right: calendar */}
-          <div className="rounded-lg border border-border/50 bg-muted/30 p-2.5 sm:min-w-0 sm:flex-1">
-            {/* Month navigation */}
-            <div className="flex items-center justify-between mb-1.5">
-              <Button
-                type="button"
-                size="icon"
-                variant="ghost"
-                className="h-7 w-7"
-                onClick={() =>
-                  setDisplayMonth(
-                    new Date(
-                      displayMonth.getFullYear(),
-                      displayMonth.getMonth() - 1,
-                      1,
-                    ),
-                  )
-                }
+          <div className="grid grid-cols-7 text-center">
+            {weekdayLabels.map((label, i) => (
+              <div
+                key={i}
+                className="text-[9px] font-medium text-muted-foreground/70"
               >
-                <ChevronLeft className="h-3.5 w-3.5" />
-              </Button>
-              <button
-                type="button"
-                className="text-sm font-medium hover:text-primary transition-colors"
-                onClick={goToToday}
-                title={t("usage.presetToday", { defaultValue: "当天" })}
-              >
-                {displayMonth.toLocaleDateString(locale, {
-                  year: "numeric",
-                  month: "long",
-                })}
-              </button>
-              <Button
-                type="button"
-                size="icon"
-                variant="ghost"
-                className="h-7 w-7"
-                onClick={() =>
-                  setDisplayMonth(
-                    new Date(
-                      displayMonth.getFullYear(),
-                      displayMonth.getMonth() + 1,
-                      1,
-                    ),
-                  )
-                }
-              >
-                <ChevronRight className="h-3.5 w-3.5" />
-              </Button>
-            </div>
+                {label}
+              </div>
+            ))}
+          </div>
 
-            {/* Weekday headers */}
-            <div className="grid grid-cols-7 text-center text-[11px] text-muted-foreground mb-0.5">
-              {weekdayLabels.map((label, i) => (
-                <div key={i} className="py-0.5">
-                  {label}
-                </div>
-              ))}
-            </div>
+          <div className="grid grid-cols-7">
+            {calendarDays.map((day) => {
+              const isCurrentMonth = day.getMonth() === displayMonth.getMonth();
+              const isToday = isSameDay(day, today);
+              const isStart = isSameDay(day, startDay);
+              const isEnd = isSameDay(day, endDay);
+              const dayStart = startOfDay(day);
+              const inRange =
+                dayStart >= startOfDay(startDay) &&
+                dayStart <= startOfDay(endDay);
+              const isEndpoint = isStart || isEnd;
+              const isRangeMiddle = inRange && !isEndpoint;
 
-            {/* Day grid */}
-            <div className="grid grid-cols-7 gap-px">
-              {calendarDays.map((day) => {
-                const isCurrentMonth =
-                  day.getMonth() === displayMonth.getMonth();
-                const isToday = isSameDay(day, today);
-                const isStart = isSameDay(day, startDay);
-                const isEnd = isSameDay(day, endDay);
-                const dayStart = startOfDay(day);
-                const inRange =
-                  dayStart >= startOfDay(startDay) &&
-                  dayStart <= startOfDay(endDay);
-                const isEndpoint = isStart || isEnd;
-
-                return (
+              return (
+                <div
+                  key={day.toISOString()}
+                  className={cn(
+                    "flex items-center justify-center",
+                    isRangeMiddle && "bg-primary/10",
+                    isStart &&
+                      inRange &&
+                      !sameDay &&
+                      "rounded-l-full bg-primary/10",
+                    isEnd &&
+                      inRange &&
+                      !sameDay &&
+                      "rounded-r-full bg-primary/10",
+                  )}
+                >
                   <button
-                    key={day.toISOString()}
                     type="button"
                     aria-label={day.toLocaleDateString(locale)}
-                    aria-current={isToday ? "date" : undefined}
                     aria-pressed={isEndpoint}
                     className={cn(
-                      "relative h-7 rounded text-xs transition-colors",
-                      !isCurrentMonth && "text-muted-foreground/30",
-                      isCurrentMonth && !inRange && "hover:bg-muted",
-                      inRange && !isEndpoint && "bg-primary/10 text-primary",
+                      "flex h-[26px] w-[26px] items-center justify-center rounded-full text-[10px] transition-colors",
+                      !isCurrentMonth && "text-muted-foreground/25",
+                      isCurrentMonth && !inRange && "hover:bg-muted/80",
+                      isRangeMiddle && "text-primary",
                       isEndpoint &&
-                        "bg-primary text-primary-foreground font-medium",
-                      isToday && !isEndpoint && "ring-1 ring-primary/40",
+                        "bg-primary font-medium text-primary-foreground",
+                      isStart &&
+                        activeField === "start" &&
+                        "ring-2 ring-primary/40 ring-offset-1",
+                      isEnd &&
+                        activeField === "end" &&
+                        "ring-2 ring-primary/40 ring-offset-1",
+                      isToday && !isEndpoint && "font-medium text-primary",
                     )}
                     onClick={() => handleDatePick(day)}
                   >
                     {day.getDate()}
                   </button>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
+        </div>
+
+        {/* 底部：日期由日历决定，只编辑时间 + 确认 */}
+        <div className="space-y-1.5 border-t border-border/50 px-2 py-1.5">
+          <div className="flex min-w-0 items-center justify-center gap-1 text-[10px]">
+            <button
+              type="button"
+              className={cn(
+                "shrink-0 rounded px-1 py-0.5 tabular-nums transition-colors",
+                activeField === "start"
+                  ? "bg-primary/10 font-medium text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+              onClick={() => setActiveField("start")}
+            >
+              {fmtShortDate(draftStart, locale)}
+            </button>
+            <Input
+              type="time"
+              step={60}
+              className="h-6 w-[54px] shrink-0 border-0 bg-muted/50 px-0.5 text-[10px] shadow-none focus-visible:ring-1"
+              value={fmtTime(draftStart)}
+              onChange={(e) => {
+                setDraftPreset(null);
+                setDraftStart(parseTimeInput(draftStart, e.target.value));
+                setError(null);
+              }}
+              onFocus={() => setActiveField("start")}
+            />
+            <span className="shrink-0 text-muted-foreground/50">–</span>
+            {!sameDay && (
+              <button
+                type="button"
+                className={cn(
+                  "shrink-0 rounded px-1 py-0.5 tabular-nums transition-colors",
+                  activeField === "end"
+                    ? "bg-primary/10 font-medium text-primary"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+                onClick={() => setActiveField("end")}
+              >
+                {fmtShortDate(draftEnd, locale)}
+              </button>
+            )}
+            <Input
+              type="time"
+              step={60}
+              className="h-6 w-[54px] shrink-0 border-0 bg-muted/50 px-0.5 text-[10px] shadow-none focus-visible:ring-1"
+              value={fmtTime(draftEnd)}
+              onChange={(e) => {
+                setDraftPreset(null);
+                setDraftEnd(parseTimeInput(draftEnd, e.target.value));
+                setError(null);
+              }}
+              onFocus={() => setActiveField("end")}
+            />
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            className="h-6 w-full rounded text-[10px]"
+            onClick={handleApply}
+          >
+            {t("common.confirm")}
+          </Button>
+          {error ? (
+            <p className="text-center text-[9px] text-destructive">{error}</p>
+          ) : null}
         </div>
       </PopoverContent>
     </Popover>

@@ -601,9 +601,9 @@ function SidebarTabTrigger({
   return (
     <TabsTrigger
       value={value}
-      className="group flex w-full items-center justify-start gap-2.5 rounded-md border-none px-3 py-2 text-left text-[13px] font-medium text-muted-foreground shadow-none transition-colors hover:bg-muted/70 hover:text-foreground data-[state=active]:!bg-primary data-[state=active]:!text-primary-foreground data-[state=active]:shadow-sm"
+      className="flex w-full items-center justify-start gap-2.5 rounded-md border-none px-3 py-2 text-left text-[13px] font-medium text-muted-foreground shadow-none transition-colors hover:bg-muted/70 hover:text-foreground data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none"
     >
-      <Icon className="h-4 w-4 flex-shrink-0 opacity-80 group-data-[state=active]:opacity-100" />
+      <Icon className="h-4 w-4 flex-shrink-0 opacity-80" />
       <span>{children}</span>
     </TabsTrigger>
   );

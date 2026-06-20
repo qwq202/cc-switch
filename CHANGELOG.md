@@ -5,6 +5,20 @@ All notable changes to CC Switch will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.16.6] - 2026-06-20
+
+### Changed
+
+- Refined the main provider, prompt, MCP, skills, sessions, and usage views with a lighter list-first layout, tighter spacing, and more consistent dark-mode surfaces.
+- Redesigned the session manager into a persistent search/filter sidebar with batch selection controls and a cleaner message reading pane.
+- Compactified the usage dashboard filters, date range picker, summary hero, trend chart, and request log table so dense usage data is easier to scan.
+
+### Fixed
+
+- Fixed settings segmented controls and Skills storage selectors so inactive items no longer inherit the blue default button style while selected dark-mode options remain blue.
+- Restored the Claude Desktop settings accessibility heading expected by the settings tests.
+- Fixed dark-mode header contrast and hover states in the main app chrome.
+
 ## [3.16.5] - 2026-06-20
 
 ### Changed

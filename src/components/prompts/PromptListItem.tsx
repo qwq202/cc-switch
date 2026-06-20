@@ -25,8 +25,17 @@ const PromptListItem: React.FC<PromptListItemProps> = ({
   const enabled = prompt.enabled === true;
 
   return (
-    <div className="group relative h-16 rounded-xl border border-border-default bg-muted/50 p-4 transition-all duration-300 hover:bg-muted hover:border-border-default/80 hover:shadow-sm">
-      <div className="flex items-center gap-4 h-full">
+    <div
+      className={`group relative flex items-center gap-4 px-4 py-3.5 transition-colors ${
+        enabled
+          ? "bg-emerald-500/[0.02]"
+          : "hover:bg-zinc-500/[0.02] dark:hover:bg-zinc-100/[0.01]"
+      }`}
+    >
+      {enabled && (
+        <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-full bg-emerald-500" />
+      )}
+      <div className="flex items-center gap-4 h-full w-full">
         {/* Toggle 开关 */}
         <div className="flex-shrink-0">
           <PromptToggle
@@ -36,19 +45,28 @@ const PromptListItem: React.FC<PromptListItemProps> = ({
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="font-medium text-foreground mb-1">{prompt.name}</h3>
+          <h3 className="font-medium text-sm text-zinc-800 dark:text-zinc-200 mb-0.5">
+            {prompt.name}
+          </h3>
           {prompt.description && (
-            <p className="text-sm text-muted-foreground truncate">
+            <p className="text-xs text-zinc-400 dark:text-zinc-500 truncate">
               {prompt.description}
             </p>
           )}
         </div>
 
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div
+          className={`flex items-center gap-1 flex-shrink-0 transition-opacity ${
+            enabled
+              ? "opacity-100"
+              : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
+          }`}
+        >
           <Button
             type="button"
             variant="ghost"
             size="icon"
+            className="h-8 w-8 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-900/5 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-white/5"
             onClick={() => onEdit(id)}
             title={t("common.edit")}
           >
@@ -58,8 +76,8 @@ const PromptListItem: React.FC<PromptListItemProps> = ({
             type="button"
             variant="ghost"
             size="icon"
+            className="h-8 w-8 rounded-lg text-zinc-500 hover:text-red-600 hover:bg-red-500/10 dark:text-zinc-400 dark:hover:text-red-400 dark:hover:bg-red-500/15"
             onClick={() => onDelete(id)}
-            className="hover:text-red-500 hover:bg-red-100 dark:hover:text-red-400 dark:hover:bg-red-500/10"
             title={t("common.delete")}
           >
             <Trash2 size={16} />

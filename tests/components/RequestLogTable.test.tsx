@@ -82,7 +82,6 @@ describe("RequestLogTable", () => {
     const { rerender } = render(
       <RequestLogTable
         range={initialRange}
-        rangeLabel="Today"
         appType="all"
         refreshIntervalMs={0}
       />,
@@ -102,7 +101,6 @@ describe("RequestLogTable", () => {
     rerender(
       <RequestLogTable
         range={nextRange}
-        rangeLabel="Custom"
         appType="all"
         refreshIntervalMs={0}
       />,
@@ -123,7 +121,6 @@ describe("RequestLogTable", () => {
     const { rerender } = render(
       <RequestLogTable
         range={range}
-        rangeLabel="Today"
         appType="all"
         refreshIntervalMs={0}
       />,
@@ -143,7 +140,6 @@ describe("RequestLogTable", () => {
     rerender(
       <RequestLogTable
         range={range}
-        rangeLabel="Today"
         appType="claude"
         refreshIntervalMs={0}
       />,

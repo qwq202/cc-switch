@@ -153,9 +153,9 @@ const UnifiedMcpPanel = React.forwardRef<
             {t("mcp.loading")}
           </div>
         ) : serverEntries.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
-              <Server size={24} className="text-muted-foreground" />
+          <div className="flex flex-col items-center justify-center min-h-full text-center py-12">
+            <div className="w-16 h-16 mx-auto mb-4 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center">
+              <Server size={24} className="text-muted-foreground/60" />
             </div>
             <h3 className="text-lg font-medium text-foreground mb-2">
               {t("mcp.unifiedPanel.noServers")}
@@ -166,7 +166,7 @@ const UnifiedMcpPanel = React.forwardRef<
           </div>
         ) : (
           <TooltipProvider delayDuration={300}>
-            <div className="rounded-xl border border-border-default overflow-hidden">
+            <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-[0_1px_3px_rgba(0,0,0,0.01)] overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-900">
               {serverEntries.map(([id, server], index) => (
                 <UnifiedMcpListItem
                   key={id}
@@ -254,14 +254,14 @@ const UnifiedMcpListItem: React.FC<UnifiedMcpListItemProps> = ({
     <ListItemRow isLast={isLast}>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="font-medium text-sm text-foreground truncate">
+          <span className="font-medium text-sm text-zinc-800 dark:text-zinc-200 truncate">
             {name}
           </span>
           {docsUrl && (
             <button
               type="button"
               onClick={openDocs}
-              className="text-muted-foreground/60 hover:text-foreground flex-shrink-0"
+              className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 flex-shrink-0"
               title={t("mcp.presets.docs")}
             >
               <ExternalLink size={12} />
@@ -270,14 +270,14 @@ const UnifiedMcpListItem: React.FC<UnifiedMcpListItemProps> = ({
         </div>
         {description && (
           <p
-            className="text-xs text-muted-foreground truncate"
+            className="text-xs text-zinc-400 dark:text-zinc-500 truncate"
             title={description}
           >
             {description}
           </p>
         )}
         {!description && tags && tags.length > 0 && (
-          <p className="text-xs text-muted-foreground/60 truncate">
+          <p className="text-xs text-zinc-400 dark:text-zinc-500 truncate">
             {tags.join(", ")}
           </p>
         )}
@@ -294,7 +294,7 @@ const UnifiedMcpListItem: React.FC<UnifiedMcpListItemProps> = ({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-7 w-7"
+          className="h-7 w-7 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-900/5 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-white/5"
           onClick={() => onEdit(id)}
           title={t("common.edit")}
         >
@@ -304,7 +304,7 @@ const UnifiedMcpListItem: React.FC<UnifiedMcpListItemProps> = ({
           type="button"
           variant="ghost"
           size="icon"
-          className="h-7 w-7 hover:text-red-500 hover:bg-red-100 dark:hover:text-red-400 dark:hover:bg-red-500/10"
+          className="h-7 w-7 rounded-lg text-zinc-500 hover:text-red-600 hover:bg-red-500/10 dark:text-zinc-400 dark:hover:text-red-400 dark:hover:bg-red-500/15"
           onClick={() => onDelete(id)}
           title={t("common.delete")}
         >

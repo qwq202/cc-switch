@@ -97,13 +97,16 @@ const PromptPanel = React.forwardRef<PromptPanelHandle, PromptPanelProps>(
 
     return (
       <div className="flex flex-col flex-1 min-h-0 px-6">
-        <div className="flex-shrink-0 py-4 glass rounded-xl border border-white/10 mb-4 px-6">
-          <div className="text-sm text-muted-foreground">
-            {t("prompts.count", { count: promptEntries.length })} ·{" "}
+        <div className="flex items-center gap-2 py-3 flex-shrink-0">
+          <span className="text-sm font-medium text-foreground whitespace-nowrap">
+            {t("prompts.count", { count: promptEntries.length })}
+          </span>
+          <span className="text-xs text-muted-foreground truncate">
+            ·{" "}
             {enabledPrompt
               ? t("prompts.enabledName", { name: enabledPrompt[1].name })
               : t("prompts.noneEnabled")}
-          </div>
+          </span>
         </div>
 
         <div className="flex-1 overflow-y-auto pb-16">
@@ -112,9 +115,9 @@ const PromptPanel = React.forwardRef<PromptPanelHandle, PromptPanelProps>(
               {t("prompts.loading")}
             </div>
           ) : promptEntries.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center">
-                <FileText size={24} className="text-muted-foreground" />
+            <div className="flex flex-col items-center justify-center min-h-full text-center py-12">
+              <div className="w-16 h-16 mx-auto mb-4 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center">
+                <FileText size={24} className="text-muted-foreground/60" />
               </div>
               <h3 className="text-lg font-medium text-foreground mb-2">
                 {t("prompts.empty")}
@@ -124,7 +127,7 @@ const PromptPanel = React.forwardRef<PromptPanelHandle, PromptPanelProps>(
               </p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-[0_1px_3px_rgba(0,0,0,0.01)] overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-900">
               {promptEntries.map(([id, prompt]) => (
                 <PromptListItem
                   key={id}

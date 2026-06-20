@@ -31,8 +31,8 @@ export function SessionTocSidebar({
   if (items.length <= 2) return null;
 
   return (
-    <div className="w-64 border-l shrink-0 hidden xl:block">
-      <div className="p-3 border-b">
+    <div className="w-64 border-l border-zinc-100 dark:border-zinc-800 shrink-0 hidden lg:block">
+      <div className="p-3 border-b border-zinc-100 dark:border-zinc-900">
         <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
           <List className="size-3.5" />
           <span>{t("sessionManager.tocTitle")}</span>
@@ -46,12 +46,12 @@ export function SessionTocSidebar({
               type="button"
               onClick={() => onItemClick(item.index)}
               className={cn(
-                "w-full text-left px-2 py-1.5 rounded text-xs transition-colors",
-                "hover:bg-muted/80 text-muted-foreground hover:text-foreground",
+                "w-full text-left px-2 py-1.5 rounded-lg text-xs transition-colors",
+                "hover:bg-zinc-900/5 dark:hover:bg-white/5 text-muted-foreground hover:text-foreground",
                 "flex items-start gap-2",
               )}
             >
-              <span className="shrink-0 w-4 h-4 rounded-full bg-primary/10 text-primary text-[10px] flex items-center justify-center font-medium">
+              <span className="shrink-0 text-[10px] tabular-nums text-muted-foreground/60 pt-0.5">
                 {tocIndex + 1}
               </span>
               <span className="line-clamp-2 leading-snug">{item.preview}</span>
@@ -84,7 +84,7 @@ export function SessionTocDialog({
       <DialogTrigger asChild>
         <Button
           size="icon"
-          className="fixed bottom-20 right-4 xl:hidden size-10 rounded-full shadow-lg z-30"
+          className="fixed bottom-20 right-4 lg:hidden size-10 rounded-full shadow-lg z-30"
         >
           <List className="size-4" />
         </Button>
@@ -95,13 +95,13 @@ export function SessionTocDialog({
         onInteractOutside={() => onOpenChange(false)}
         onEscapeKeyDown={() => onOpenChange(false)}
       >
-        <DialogHeader className="px-4 py-3 relative border-b">
+        <DialogHeader className="px-4 py-3 relative border-b border-zinc-100 dark:border-zinc-800">
           <DialogTitle className="flex items-center gap-2 text-base font-semibold">
-            <List className="size-4 text-primary" />
+            <List className="size-4 text-zinc-500 dark:text-zinc-400" />
             {t("sessionManager.tocTitle")}
           </DialogTitle>
           <DialogClose
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1.5 hover:bg-zinc-900/5 dark:hover:bg-white/5 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
             aria-label={t("common.close")}
           >
             <X className="size-4 text-muted-foreground" />
@@ -116,15 +116,15 @@ export function SessionTocDialog({
                 onClick={() => onItemClick(item.index)}
                 className={cn(
                   "w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all",
-                  "hover:bg-primary/10 text-foreground",
+                  "hover:bg-zinc-900/5 dark:hover:bg-white/5 text-foreground",
                   "flex items-start gap-3",
                   "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset",
                 )}
               >
-                <span className="shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-semibold">
+                <span className="shrink-0 text-xs tabular-nums text-muted-foreground/60 pt-1">
                   {tocIndex + 1}
                 </span>
-                <span className="line-clamp-2 leading-relaxed pt-0.5">
+                <span className="line-clamp-2 leading-relaxed">
                   {item.preview}
                 </span>
               </button>

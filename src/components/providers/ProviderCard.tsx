@@ -457,7 +457,7 @@ export function ProviderCard({
                   title={displayUrl}
                   disabled={!isClickableUrl}
                 >
-                  <span className="truncate max-w-[200px] sm:max-w-[320px]">
+                  <span className="truncate max-w-[240px] sm:max-w-[420px] lg:max-w-[560px]">
                     {displayUrl}
                   </span>
                 </button>

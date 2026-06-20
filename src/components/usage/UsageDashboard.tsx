@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { UsageHero } from "./UsageHero";
 import { UsageTrendChart } from "./UsageTrendChart";
-import { RequestLogTable } from "./RequestLogTable";
+import { RequestLogTable, RequestLogStatusFilter } from "./RequestLogTable";
 import { ProviderStatsTable } from "./ProviderStatsTable";
 import { ModelStatsTable } from "./ModelStatsTable";
 import {
@@ -74,6 +74,10 @@ export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
   );
   const [model, setModel] = useState<string | undefined>(undefined);
   const [refreshIntervalMs, setRefreshIntervalMs] = useState(30000);
+  const [statsTab, setStatsTab] = useState("logs");
+  const [logStatusCode, setLogStatusCode] = useState<number | undefined>(
+    undefined,
+  );
 
   // 切应用时清掉下游筛选，避免留下一个在新范围内查无数据的"幽灵"组合；
   // 切 Provider 同理清掉模型（模型选项随 Provider 级联）。
@@ -161,8 +165,10 @@ export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
     >
       <div
         className={cn(
-          "flex flex-col justify-between gap-4",
-          embedded ? "" : "mb-2 lg:flex-row lg:items-end",
+          "flex flex-col gap-3",
+          embedded
+            ? ""
+            : "mb-2 lg:flex-row lg:items-end lg:justify-between lg:gap-4",
         )}
       >
         {!embedded ? (
@@ -176,8 +182,8 @@ export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
           </div>
         ) : null}
 
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center p-1 bg-muted/30 rounded-lg border border-border/50">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <div className="inline-flex items-center gap-0.5 rounded-lg bg-muted/50 p-0.5">
             {APP_FILTER_OPTIONS.map((type) => {
               const label = t(`usage.appFilter.${type}`);
               return (
@@ -188,19 +194,19 @@ export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
                   title={label}
                   aria-label={label}
                   className={cn(
-                    "flex h-8 items-center justify-center px-2.5 rounded-md transition-all",
+                    "flex h-7 items-center justify-center rounded-md px-2 transition-colors",
                     appType === type
                       ? "bg-background text-primary shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
+                      : "text-muted-foreground hover:bg-background/60 hover:text-foreground",
                   )}
                 >
                   {type === "all" ? (
-                    <LayoutGrid className="h-4 w-4" />
+                    <LayoutGrid className="h-3.5 w-3.5" />
                   ) : (
                     <ProviderIcon
                       icon={APP_FILTER_ICON[type]}
                       name={label}
-                      size={16}
+                      size={14}
                     />
                   )}
                 </button>
@@ -215,7 +221,7 @@ export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
             onValueChange={(v) => changeProviderName(decodeOptionValue(v))}
           >
             <SelectTrigger
-              className="h-9 w-[100px] bg-background text-xs focus:border-border-default [&>span]:min-w-0 [&>span]:truncate"
+              className="h-8 w-[92px] rounded-lg border-border/60 bg-background text-xs shadow-none focus:ring-1 [&>span]:min-w-0 [&>span]:truncate"
               title={providerName ?? t("usage.filterBySource")}
             >
               <SelectValue />
@@ -240,7 +246,7 @@ export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
             onValueChange={(v) => setModel(decodeOptionValue(v))}
           >
             <SelectTrigger
-              className="h-9 w-[100px] bg-background text-xs focus:border-border-default [&>span]:min-w-0 [&>span]:truncate"
+              className="h-8 w-[92px] rounded-lg border-border/60 bg-background text-xs shadow-none focus:ring-1 [&>span]:min-w-0 [&>span]:truncate"
               title={model ?? t("usage.filterByModel")}
             >
               <SelectValue />
@@ -260,36 +266,34 @@ export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
             </SelectContent>
           </Select>
 
-          <div className="flex items-center gap-2 ml-auto lg:ml-0">
-            <Select
-              value={String(refreshIntervalMs)}
-              onValueChange={(v) => changeRefreshInterval(Number(v))}
+          <Select
+            value={String(refreshIntervalMs)}
+            onValueChange={(v) => changeRefreshInterval(Number(v))}
+          >
+            <SelectTrigger
+              className="h-8 w-[84px] rounded-lg border-border/60 bg-background text-xs shadow-none focus:ring-1"
+              title={t("usage.refreshInterval")}
+              aria-label={t("usage.refreshInterval")}
             >
-              <SelectTrigger
-                className="h-9 w-[100px] bg-background text-xs focus:border-border-default"
-                title={t("usage.refreshInterval")}
-                aria-label={t("usage.refreshInterval")}
-              >
-                <span className="flex items-center gap-2">
-                  <RefreshCw className="h-3.5 w-3.5 shrink-0" />
-                  <SelectValue />
-                </span>
-              </SelectTrigger>
-              <SelectContent>
-                {REFRESH_INTERVAL_OPTIONS_MS.map((ms) => (
-                  <SelectItem key={ms} value={String(ms)}>
-                    {ms > 0 ? `${ms / 1000}s` : t("usage.refreshOff")}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <span className="flex items-center gap-1.5">
+                <RefreshCw className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                <SelectValue />
+              </span>
+            </SelectTrigger>
+            <SelectContent>
+              {REFRESH_INTERVAL_OPTIONS_MS.map((ms) => (
+                <SelectItem key={ms} value={String(ms)}>
+                  {ms > 0 ? `${ms / 1000}s` : t("usage.refreshOff")}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-            <UsageDateRangePicker
-              selection={range}
-              triggerLabel={rangeLabel}
-              onApply={(nextRange) => setRange(nextRange)}
-            />
-          </div>
+          <UsageDateRangePicker
+            selection={range}
+            triggerLabel={rangeLabel}
+            onApply={(nextRange) => setRange(nextRange)}
+          />
         </div>
       </div>
 
@@ -311,22 +315,38 @@ export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
       />
 
       <div className="space-y-4">
-        <Tabs defaultValue="logs" className="w-full">
-          <div className="flex items-center justify-between mb-4">
-            <TabsList className="bg-muted/50">
-              <TabsTrigger value="logs" className="gap-2">
+        <Tabs value={statsTab} onValueChange={setStatsTab} className="w-full">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <TabsList className="h-9 bg-muted/50 p-1">
+              <TabsTrigger
+                value="logs"
+                className="h-8 gap-2 px-3.5 text-[13px]"
+              >
                 <ListFilter className="h-4 w-4" />
                 {t("usage.requestLogs")}
               </TabsTrigger>
-              <TabsTrigger value="providers" className="gap-2">
+              <TabsTrigger
+                value="providers"
+                className="h-8 gap-2 px-3.5 text-[13px]"
+              >
                 <Activity className="h-4 w-4" />
                 {t("usage.providerStats")}
               </TabsTrigger>
-              <TabsTrigger value="models" className="gap-2">
+              <TabsTrigger
+                value="models"
+                className="h-8 gap-2 px-3.5 text-[13px]"
+              >
                 <BarChart3 className="h-4 w-4" />
                 {t("usage.modelStats")}
               </TabsTrigger>
             </TabsList>
+
+            {statsTab === "logs" ? (
+              <RequestLogStatusFilter
+                value={logStatusCode}
+                onChange={setLogStatusCode}
+              />
+            ) : null}
           </div>
 
           <motion.div
@@ -337,12 +357,11 @@ export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
             <TabsContent value="logs" className="mt-0">
               <RequestLogTable
                 range={range}
-                rangeLabel={rangeLabel}
                 appType={appType}
                 providerName={providerName}
                 model={model}
                 refreshIntervalMs={refreshIntervalMs}
-                onRangeChange={setRange}
+                statusCode={logStatusCode}
               />
             </TabsContent>
 
