@@ -43,6 +43,8 @@ const DialogContent = React.forwardRef<
     zIndex?: "base" | "nested" | "alert" | "top";
     variant?: "default" | "fullscreen";
     overlayClassName?: string;
+    /** 点击遮罩层时关闭对话框，默认 false */
+    dismissOnInteractOutside?: boolean;
   }
 >(
   (
@@ -52,6 +54,8 @@ const DialogContent = React.forwardRef<
       zIndex = "base",
       variant = "default",
       overlayClassName,
+      dismissOnInteractOutside = false,
+      onInteractOutside,
       ...props
     },
     ref,
@@ -77,8 +81,10 @@ const DialogContent = React.forwardRef<
           ref={ref}
           className={cn(variantClass, zIndexMap[zIndex], className)}
           onInteractOutside={(e) => {
-            // 防止点击遮罩层关闭对话框
-            e.preventDefault();
+            if (!dismissOnInteractOutside) {
+              e.preventDefault();
+            }
+            onInteractOutside?.(e);
           }}
           {...props}
         >

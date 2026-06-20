@@ -1,4 +1,3 @@
-import { MonitorUp, Shield } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -76,28 +75,22 @@ export function ClaudeDesktopSettings() {
       });
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center gap-2 border-b border-border/40 pb-2">
-        <MonitorUp className="h-4 w-4 text-primary" />
-        <h3 className="text-sm font-medium">
-          {t("settings.claudeDesktopSettings", {
-            defaultValue: "Claude Desktop 设置",
-          })}
-        </h3>
-      </div>
-
-      <div className="space-y-3">
-        <ToggleRow
-          icon={<Shield className="h-4 w-4 text-blue-500" />}
-          title={t("settings.disableClaudeDesktopAutoUpdates", {
-            defaultValue: "关闭 Claude Desktop 自动更新",
-          })}
-          description={description}
-          checked={status?.disableAutoUpdates ?? false}
-          onCheckedChange={(value) => mutation.mutate(value)}
-          disabled={disabled}
-        />
-      </div>
+    <section aria-labelledby="claude-desktop-settings-title">
+      <h3 id="claude-desktop-settings-title" className="sr-only">
+        {t("settings.claudeDesktopSettings", {
+          defaultValue: "Claude Desktop 设置",
+        })}
+      </h3>
+      <ToggleRow
+        variant="plain"
+        title={t("settings.disableClaudeDesktopAutoUpdates", {
+          defaultValue: "关闭 Claude Desktop 自动更新",
+        })}
+        description={description}
+        checked={status?.disableAutoUpdates ?? false}
+        onCheckedChange={(value) => mutation.mutate(value)}
+        disabled={disabled}
+      />
     </section>
   );
 }

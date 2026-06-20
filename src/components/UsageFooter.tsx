@@ -6,6 +6,34 @@ import { useUsageQuery } from "@/lib/query/queries";
 import { UsageData, Provider } from "@/types";
 import { TierBadge } from "@/components/SubscriptionQuotaFooter";
 import type { QuotaTier } from "@/types/subscription";
+import { cn } from "@/lib/utils";
+
+interface ParsedExtraItem {
+  label: string;
+  percent: string;
+  resetTime: string;
+}
+
+export function parseExtraText(text: string): ParsedExtraItem[] {
+  if (!text) return [];
+  const items: ParsedExtraItem[] = [];
+  const regex =
+    /(5小时|7天|24小时|30天|1天)\s*[:：]?\s*(\d+(?:\.\d+)?%)\s*(?:🕒|⏰)?\s*([^\s,，;；]+)/g;
+  let match;
+  while ((match = regex.exec(text)) !== null) {
+    items.push({
+      label: match[1],
+      percent: match[2],
+      resetTime: match[3],
+    });
+  }
+  return items;
+}
+
+function cleanExtraText(text: string): string {
+  if (!text) return "";
+  return text.replace(/🕒/g, "").replace(/\s+/g, " ").trim();
+}
 
 interface UsageFooterProps {
   provider: Provider;
@@ -139,47 +167,34 @@ const UsageFooter: React.FC<UsageFooterProps> = ({
 
   // ── Token Plan：订阅风格内联渲染（百分比徽章 + 倒计时） ──
   if (isTokenPlan && inline) {
+    const tiers = usageDataList.map((d) => toQuotaTier(d));
+    const planLabel = tiers[0]?.planLabel;
+
     return (
-      <div className="flex flex-col items-end gap-1 text-xs whitespace-nowrap flex-shrink-0">
-        {/* 第一行：查询时间 + 刷新 */}
-        <div className="flex items-center gap-2 justify-end">
-          <span className="text-[10px] text-muted-foreground/70 flex items-center gap-1">
-            <Clock size={10} />
-            {lastQueriedAt
-              ? formatRelativeTime(lastQueriedAt, now, t)
-              : t("usage.never", { defaultValue: "从未更新" })}
+      <div className="inline-flex items-center gap-1.5 text-xs whitespace-nowrap flex-shrink-0">
+        {planLabel && (
+          <span className="font-semibold text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-[10px]">
+            {planLabel}
           </span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              refetch();
-            }}
-            disabled={loading}
-            className="p-1 rounded hover:bg-muted transition-colors disabled:opacity-50 flex-shrink-0 text-muted-foreground"
-            title={t("usage.refreshUsage")}
-          >
-            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-          </button>
-        </div>
-        {/* 第二行：tier 徽章（复用官方订阅的 TierBadge） */}
-        <div className="flex items-center gap-2">
-          {(() => {
-            const tiers = usageDataList.map((d) => toQuotaTier(d));
-            const planLabel = tiers[0]?.planLabel;
-            return (
-              <>
-                {planLabel && (
-                  <span className="font-semibold text-muted-foreground">
-                    💰 {planLabel}
-                  </span>
-                )}
-                {tiers.map((tier, index) => (
-                  <TierBadge key={index} tier={tier} t={t} />
-                ))}
-              </>
-            );
-          })()}
-        </div>
+        )}
+        {tiers.map((tier, index) => (
+          <TierBadge key={index} tier={tier} t={t} />
+        ))}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            refetch();
+          }}
+          disabled={loading}
+          className="p-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors disabled:opacity-50 text-zinc-400 hover:text-zinc-600 flex-shrink-0"
+          title={`${t("usage.refreshUsage")} (上次更新: ${
+            lastQueriedAt
+              ? formatRelativeTime(lastQueriedAt, now, t)
+              : t("usage.never", { defaultValue: "从未更新" })
+          })`}
+        >
+          <RefreshCw size={11} className={loading ? "animate-spin" : ""} />
+        </button>
       </div>
     );
   }
@@ -188,85 +203,95 @@ const UsageFooter: React.FC<UsageFooterProps> = ({
   if (inline) {
     const firstUsage = usageDataList[0];
     const isExpired = firstUsage.isValid === false;
+    const parsedExtra = firstUsage.extra
+      ? parseExtraText(firstUsage.extra)
+      : [];
 
     return (
-      <div className="flex flex-col items-end gap-1 text-xs whitespace-nowrap flex-shrink-0">
-        {/* 第一行：更新时间和刷新按钮 */}
-        <div className="flex items-center gap-2 justify-end">
-          {/* 上次查询时间 */}
-          <span className="text-[10px] text-muted-foreground/70 flex items-center gap-1">
-            <Clock size={10} />
-            {lastQueriedAt
-              ? formatRelativeTime(lastQueriedAt, now, t)
-              : t("usage.never", { defaultValue: "从未更新" })}
-          </span>
-
-          {/* 刷新按钮 */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              refetch();
-            }}
-            disabled={loading}
-            className="p-1 rounded hover:bg-muted transition-colors disabled:opacity-50 flex-shrink-0 text-muted-foreground"
-            title={t("usage.refreshUsage")}
-          >
-            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-          </button>
-        </div>
-
-        {/* 第二行：用量和剩余 */}
-        <div className="flex items-center gap-2">
-          {/* 已用 */}
-          {firstUsage.used !== undefined && (
-            <div className="flex items-center gap-0.5">
-              <span className="text-gray-500 dark:text-gray-400">
-                {t("usage.used")}
-              </span>
-              <span className="tabular-nums text-gray-600 dark:text-gray-400 font-medium">
-                {firstUsage.used.toFixed(2)}
-              </span>
-            </div>
-          )}
-
-          {/* 剩余 */}
-          {firstUsage.remaining !== undefined && (
-            <div className="flex items-center gap-0.5">
-              <span className="text-gray-500 dark:text-gray-400">
-                {t("usage.remaining")}
-              </span>
-              <span
-                className={`font-semibold tabular-nums ${
-                  isExpired
-                    ? "text-red-500 dark:text-red-400"
-                    : firstUsage.remaining <
-                        (firstUsage.total || firstUsage.remaining) * 0.1
-                      ? "text-orange-500 dark:text-orange-400"
-                      : "text-green-600 dark:text-green-400"
-                }`}
+      <div className="inline-flex items-center gap-1.5 text-xs whitespace-nowrap flex-shrink-0">
+        {parsedExtra.length > 0 ? (
+          <div className="flex items-center gap-1.5">
+            {parsedExtra.map((item, idx) => (
+              <div
+                key={idx}
+                className="inline-flex items-center gap-1 bg-zinc-900/[0.02] dark:bg-white/[0.02] border border-zinc-100 dark:border-zinc-900 px-1.5 py-0.5 rounded text-[10px] text-zinc-500 font-mono"
               >
-                {firstUsage.remaining.toFixed(2)}
+                <span className="text-zinc-400">{item.label}</span>
+                <span
+                  className={cn(
+                    "font-semibold",
+                    parseFloat(item.percent) > 80
+                      ? "text-red-500"
+                      : parseFloat(item.percent) > 50
+                        ? "text-orange-500"
+                        : "text-emerald-600 dark:text-emerald-400",
+                  )}
+                >
+                  {item.percent}
+                </span>
+                <span className="text-[9px] text-zinc-400">
+                  ({item.resetTime})
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 text-[11px] text-zinc-500 font-medium">
+            {firstUsage.used !== undefined && (
+              <span className="text-zinc-400">
+                {t("usage.used")}:{" "}
+                <span className="text-zinc-600 dark:text-zinc-400 font-semibold tabular-nums">
+                  {firstUsage.used.toFixed(2)}
+                </span>
               </span>
-            </div>
-          )}
+            )}
+            {firstUsage.remaining !== undefined && (
+              <span className="text-zinc-400">
+                {t("usage.remaining")}:{" "}
+                <span
+                  className={cn(
+                    "font-semibold tabular-nums",
+                    isExpired
+                      ? "text-red-500"
+                      : firstUsage.remaining <
+                          (firstUsage.total || firstUsage.remaining) * 0.1
+                        ? "text-orange-500"
+                        : "text-emerald-600 dark:text-emerald-400",
+                  )}
+                >
+                  {firstUsage.remaining.toFixed(2)}
+                </span>
+              </span>
+            )}
+            {firstUsage.unit && (
+              <span className="text-zinc-400">{firstUsage.unit}</span>
+            )}
+            {firstUsage.extra && (
+              <span
+                className="text-zinc-400 truncate max-w-[120px]"
+                title={firstUsage.extra}
+              >
+                {cleanExtraText(firstUsage.extra)}
+              </span>
+            )}
+          </div>
+        )}
 
-          {/* 单位 */}
-          {firstUsage.unit && (
-            <span className="text-gray-500 dark:text-gray-400">
-              {firstUsage.unit}
-            </span>
-          )}
-
-          {/* 扩展字段 extra */}
-          {firstUsage.extra && (
-            <span
-              className="text-gray-500 dark:text-gray-400 truncate max-w-[150px]"
-              title={firstUsage.extra}
-            >
-              {firstUsage.extra}
-            </span>
-          )}
-        </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            refetch();
+          }}
+          disabled={loading}
+          className="p-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-850 transition-colors disabled:opacity-50 text-zinc-400 hover:text-zinc-600 flex-shrink-0"
+          title={`${t("usage.refreshUsage")} (上次更新: ${
+            lastQueriedAt
+              ? formatRelativeTime(lastQueriedAt, now, t)
+              : t("usage.never", { defaultValue: "从未更新" })
+          })`}
+        >
+          <RefreshCw size={11} className={loading ? "animate-spin" : ""} />
+        </button>
       </div>
     );
   }

@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { ToggleRow } from "@/components/ui/toggle-row";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { SettingRow } from "@/components/settings/SettingRow";
+import { SettingSection } from "@/components/settings/SettingSection";
 import {
   settingsApi,
   type RectifierConfig,
@@ -65,173 +73,129 @@ export function RectifierConfigPanel() {
   if (isLoading) return null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label>{t("settings.advanced.rectifier.enabled")}</Label>
-          <p className="text-xs text-muted-foreground">
-            {t("settings.advanced.rectifier.enabledDescription")}
-          </p>
-        </div>
-        <Switch
+    <div className="space-y-5">
+      <SettingSection
+        title={t("settings.advanced.rectifier.title")}
+        footer={t("settings.advanced.rectifier.enabledDescription")}
+      >
+        <ToggleRow
+          variant="plain"
+          title={t("settings.advanced.rectifier.enabled")}
           checked={config.enabled}
           onCheckedChange={(checked) => handleChange({ enabled: checked })}
         />
-      </div>
+        <ToggleRow
+          variant="plain"
+          title={t("settings.advanced.rectifier.thinkingSignature")}
+          description={t(
+            "settings.advanced.rectifier.thinkingSignatureDescription",
+          )}
+          checked={config.requestThinkingSignature}
+          disabled={!config.enabled}
+          onCheckedChange={(checked) =>
+            handleChange({ requestThinkingSignature: checked })
+          }
+        />
+        <ToggleRow
+          variant="plain"
+          title={t("settings.advanced.rectifier.thinkingBudget")}
+          description={t(
+            "settings.advanced.rectifier.thinkingBudgetDescription",
+          )}
+          checked={config.requestThinkingBudget}
+          disabled={!config.enabled}
+          onCheckedChange={(checked) =>
+            handleChange({ requestThinkingBudget: checked })
+          }
+        />
+        <ToggleRow
+          variant="plain"
+          title={t("settings.advanced.rectifier.mediaFallback")}
+          description={t(
+            "settings.advanced.rectifier.mediaFallbackDescription",
+          )}
+          checked={config.requestMediaFallback}
+          disabled={!config.enabled}
+          onCheckedChange={(checked) =>
+            handleChange({ requestMediaFallback: checked })
+          }
+        />
+        <ToggleRow
+          variant="plain"
+          title={t("settings.advanced.rectifier.mediaHeuristic")}
+          description={t(
+            "settings.advanced.rectifier.mediaHeuristicDescription",
+          )}
+          checked={config.requestMediaHeuristic}
+          disabled={!config.enabled || !config.requestMediaFallback}
+          onCheckedChange={(checked) =>
+            handleChange({ requestMediaHeuristic: checked })
+          }
+        />
+      </SettingSection>
 
-      <div className="space-y-4">
-        <h4 className="text-sm font-medium text-muted-foreground">
-          {t("settings.advanced.rectifier.requestGroup")}
-        </h4>
-        <div className="flex items-center justify-between pl-4">
-          <div className="space-y-0.5">
-            <Label>{t("settings.advanced.rectifier.thinkingSignature")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("settings.advanced.rectifier.thinkingSignatureDescription")}
-            </p>
-          </div>
-          <Switch
-            checked={config.requestThinkingSignature}
-            disabled={!config.enabled}
-            onCheckedChange={(checked) =>
-              handleChange({ requestThinkingSignature: checked })
-            }
-          />
-        </div>
-        <div className="flex items-center justify-between pl-4">
-          <div className="space-y-0.5">
-            <Label>{t("settings.advanced.rectifier.thinkingBudget")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("settings.advanced.rectifier.thinkingBudgetDescription")}
-            </p>
-          </div>
-          <Switch
-            checked={config.requestThinkingBudget}
-            disabled={!config.enabled}
-            onCheckedChange={(checked) =>
-              handleChange({ requestThinkingBudget: checked })
-            }
-          />
-        </div>
-        <div className="flex items-center justify-between pl-4">
-          <div className="space-y-0.5">
-            <Label>{t("settings.advanced.rectifier.mediaFallback")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("settings.advanced.rectifier.mediaFallbackDescription")}
-            </p>
-          </div>
-          <Switch
-            checked={config.requestMediaFallback}
-            disabled={!config.enabled}
-            onCheckedChange={(checked) =>
-              handleChange({ requestMediaFallback: checked })
-            }
-          />
-        </div>
-        <div className="flex items-center justify-between pl-8">
-          <div className="space-y-0.5">
-            <Label>{t("settings.advanced.rectifier.mediaHeuristic")}</Label>
-            <p className="text-xs text-muted-foreground">
-              {t("settings.advanced.rectifier.mediaHeuristicDescription")}
-            </p>
-          </div>
-          <Switch
-            checked={config.requestMediaHeuristic}
-            disabled={!config.enabled || !config.requestMediaFallback}
-            onCheckedChange={(checked) =>
-              handleChange({ requestMediaHeuristic: checked })
-            }
-          />
-        </div>
-      </div>
-
-      <div className="border-t pt-6 mt-6">
-        <div className="space-y-1 mb-4">
-          <h3 className="text-sm font-medium">
-            {t("settings.advanced.optimizer.title")}
-          </h3>
-          <p className="text-xs text-muted-foreground">
-            {t("settings.advanced.optimizer.description")}
-          </p>
-        </div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>{t("settings.advanced.optimizer.enabled")}</Label>
-            </div>
-            <Switch
-              checked={optimizerConfig.enabled}
-              onCheckedChange={(checked) =>
-                handleOptimizerChange({ enabled: checked })
+      <SettingSection
+        title={t("settings.advanced.optimizer.title")}
+        footer={t("settings.advanced.optimizer.description")}
+      >
+        <ToggleRow
+          variant="plain"
+          title={t("settings.advanced.optimizer.enabled")}
+          checked={optimizerConfig.enabled}
+          onCheckedChange={(checked) =>
+            handleOptimizerChange({ enabled: checked })
+          }
+        />
+        <ToggleRow
+          variant="plain"
+          title={t("settings.advanced.optimizer.thinkingOptimizer")}
+          description={t(
+            "settings.advanced.optimizer.thinkingOptimizerDescription",
+          )}
+          checked={optimizerConfig.thinkingOptimizer}
+          disabled={!optimizerConfig.enabled}
+          onCheckedChange={(checked) =>
+            handleOptimizerChange({ thinkingOptimizer: checked })
+          }
+        />
+        <ToggleRow
+          variant="plain"
+          title={t("settings.advanced.optimizer.cacheInjection")}
+          description={t(
+            "settings.advanced.optimizer.cacheInjectionDescription",
+          )}
+          checked={optimizerConfig.cacheInjection}
+          disabled={!optimizerConfig.enabled}
+          onCheckedChange={(checked) =>
+            handleOptimizerChange({ cacheInjection: checked })
+          }
+        />
+        {optimizerConfig.cacheInjection ? (
+          <SettingRow title={t("settings.advanced.optimizer.cacheTtl")}>
+            <Select
+              value={optimizerConfig.cacheTtl}
+              disabled={
+                !optimizerConfig.enabled || !optimizerConfig.cacheInjection
               }
-            />
-          </div>
-
-          <div className="space-y-4 pl-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>
-                  {t("settings.advanced.optimizer.thinkingOptimizer")}
-                </Label>
-                <p className="text-xs text-muted-foreground">
-                  {t(
-                    "settings.advanced.optimizer.thinkingOptimizerDescription",
-                  )}
-                </p>
-              </div>
-              <Switch
-                checked={optimizerConfig.thinkingOptimizer}
-                disabled={!optimizerConfig.enabled}
-                onCheckedChange={(checked) =>
-                  handleOptimizerChange({ thinkingOptimizer: checked })
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>{t("settings.advanced.optimizer.cacheInjection")}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t("settings.advanced.optimizer.cacheInjectionDescription")}
-                </p>
-              </div>
-              <Switch
-                checked={optimizerConfig.cacheInjection}
-                disabled={!optimizerConfig.enabled}
-                onCheckedChange={(checked) =>
-                  handleOptimizerChange({ cacheInjection: checked })
-                }
-              />
-            </div>
-
-            {optimizerConfig.cacheInjection && (
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>{t("settings.advanced.optimizer.cacheTtl")}</Label>
-                </div>
-                <select
-                  className="h-9 rounded-md border border-input bg-background px-3 text-sm"
-                  value={optimizerConfig.cacheTtl}
-                  disabled={
-                    !optimizerConfig.enabled || !optimizerConfig.cacheInjection
-                  }
-                  onChange={(e) =>
-                    handleOptimizerChange({ cacheTtl: e.target.value })
-                  }
-                >
-                  <option value="5m">
-                    {t("settings.advanced.optimizer.cacheTtl5m")}
-                  </option>
-                  <option value="1h">
-                    {t("settings.advanced.optimizer.cacheTtl1h")}
-                  </option>
-                </select>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+              onValueChange={(value) =>
+                handleOptimizerChange({ cacheTtl: value })
+              }
+            >
+              <SelectTrigger className="h-8 w-[120px] text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5m">
+                  {t("settings.advanced.optimizer.cacheTtl5m")}
+                </SelectItem>
+                <SelectItem value="1h">
+                  {t("settings.advanced.optimizer.cacheTtl1h")}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </SettingRow>
+        ) : null}
+      </SettingSection>
     </div>
   );
 }

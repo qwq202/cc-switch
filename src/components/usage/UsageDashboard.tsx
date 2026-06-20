@@ -64,7 +64,7 @@ const encodeOptionValue = (name: string) => `${DYNAMIC_OPTION_PREFIX}${name}`;
 const decodeOptionValue = (value: string) =>
   value === "all" ? undefined : value.slice(DYNAMIC_OPTION_PREFIX.length);
 
-export function UsageDashboard() {
+export function UsageDashboard({ embedded = false }: { embedded?: boolean }) {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
   const [range, setRange] = useState<UsageRangeSelection>({ preset: "today" });
@@ -154,18 +154,27 @@ export function UsageDashboard() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: embedded ? 0 : 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="space-y-8 pb-8"
+      transition={{ duration: embedded ? 0.2 : 0.4 }}
+      className={cn("space-y-6", embedded ? "pb-2" : "space-y-8 pb-8")}
     >
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-2">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-2xl font-bold tracking-tight">
-            {t("usage.title")}
-          </h2>
-          <p className="text-sm text-muted-foreground">{t("usage.subtitle")}</p>
-        </div>
+      <div
+        className={cn(
+          "flex flex-col justify-between gap-4",
+          embedded ? "" : "mb-2 lg:flex-row lg:items-end",
+        )}
+      >
+        {!embedded ? (
+          <div className="flex flex-col gap-1">
+            <h2 className="text-2xl font-bold tracking-tight">
+              {t("usage.title")}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {t("usage.subtitle")}
+            </p>
+          </div>
+        ) : null}
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center p-1 bg-muted/30 rounded-lg border border-border/50">

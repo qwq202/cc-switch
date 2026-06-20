@@ -16,6 +16,7 @@ import {
   useScanProxies,
   type DetectedProxy,
 } from "@/hooks/useGlobalProxy";
+import { SettingSection } from "@/components/settings/SettingSection";
 
 /** 从完整 URL 提取认证信息 */
 function extractAuth(url: string): {
@@ -148,128 +149,126 @@ export function GlobalProxySettings() {
   }
 
   return (
-    <div className="space-y-3">
-      {/* 描述 */}
-      <p className="text-sm text-muted-foreground">
-        {t("settings.globalProxy.hint")}
-      </p>
-
-      {/* 代理地址输入框和按钮 */}
-      <div className="flex gap-2">
-        <Input
-          placeholder="http://127.0.0.1:7890 / socks5://127.0.0.1:1080"
-          value={url}
-          onChange={(e) => {
-            setUrl(e.target.value);
-            setDirty(true);
-          }}
-          onKeyDown={handleKeyDown}
-          className="font-mono text-sm flex-1"
-        />
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={scanMutation.isPending}
-          onClick={handleScan}
-          title={t("settings.globalProxy.scan")}
-        >
-          {scanMutation.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Search className="h-4 w-4" />
-          )}
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={!fullUrl || testMutation.isPending}
-          onClick={handleTest}
-          title={t("settings.globalProxy.test")}
-        >
-          {testMutation.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <TestTube2 className="h-4 w-4" />
-          )}
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          disabled={!url && !username && !password}
-          onClick={handleClear}
-          title={t("settings.globalProxy.clear")}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-        <Button
-          onClick={handleSave}
-          disabled={!dirty || setMutation.isPending}
-          size="sm"
-        >
-          {setMutation.isPending && (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          )}
-          {t("common.save")}
-        </Button>
-      </div>
-
-      {/* 认证信息：用户名 + 密码（可选） */}
-      <div className="flex gap-2">
-        <Input
-          placeholder={t("settings.globalProxy.username")}
-          value={username}
-          onChange={(e) => {
-            setUsername(e.target.value);
-            setDirty(true);
-          }}
-          onKeyDown={handleKeyDown}
-          className="font-mono text-sm flex-1"
-        />
-        <div className="relative flex-1">
+    <SettingSection footer={t("settings.globalProxy.hint")} inset>
+      <div className="space-y-3">
+        <div className="flex gap-2">
           <Input
-            type={showPassword ? "text" : "password"}
-            placeholder={t("settings.globalProxy.password")}
-            value={password}
+            placeholder="http://127.0.0.1:7890 / socks5://127.0.0.1:1080"
+            value={url}
             onChange={(e) => {
-              setPassword(e.target.value);
+              setUrl(e.target.value);
               setDirty(true);
             }}
             onKeyDown={handleKeyDown}
-            className="font-mono text-sm pr-10"
+            className="h-8 flex-1 font-mono text-xs"
           />
           <Button
-            type="button"
-            variant="ghost"
+            variant="outline"
             size="icon"
-            className="absolute right-0 top-0 h-full px-3 hover:bg-transparent"
-            onClick={() => setShowPassword(!showPassword)}
-            tabIndex={-1}
+            className="h-8 w-8 shrink-0"
+            disabled={scanMutation.isPending}
+            onClick={() => void handleScan()}
+            title={t("settings.globalProxy.scan")}
           >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4 text-muted-foreground" />
+            {scanMutation.isPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <Eye className="h-4 w-4 text-muted-foreground" />
+              <Search className="h-3.5 w-3.5" />
             )}
           </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            disabled={!fullUrl || testMutation.isPending}
+            onClick={() => void handleTest()}
+            title={t("settings.globalProxy.test")}
+          >
+            {testMutation.isPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <TestTube2 className="h-3.5 w-3.5" />
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-8 w-8 shrink-0"
+            disabled={!url && !username && !password}
+            onClick={handleClear}
+            title={t("settings.globalProxy.clear")}
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            onClick={() => void handleSave()}
+            disabled={!dirty || setMutation.isPending}
+            size="sm"
+            className="h-8 shrink-0 text-xs"
+          >
+            {setMutation.isPending && (
+              <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+            )}
+            {t("common.save")}
+          </Button>
         </div>
-      </div>
 
-      {/* 扫描结果 */}
-      {detected.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {detected.map((p) => (
+        <div className="flex gap-2">
+          <Input
+            placeholder={t("settings.globalProxy.username")}
+            value={username}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              setDirty(true);
+            }}
+            onKeyDown={handleKeyDown}
+            className="h-8 flex-1 font-mono text-xs"
+          />
+          <div className="relative flex-1">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder={t("settings.globalProxy.password")}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setDirty(true);
+              }}
+              onKeyDown={handleKeyDown}
+              className="h-8 pr-10 font-mono text-xs"
+            />
             <Button
-              key={p.url}
-              variant="secondary"
-              size="sm"
-              onClick={() => handleSelect(p.url)}
-              className="font-mono text-xs"
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-0 top-0 h-8 w-8 hover:bg-transparent"
+              onClick={() => setShowPassword(!showPassword)}
+              tabIndex={-1}
             >
-              {p.url}
+              {showPassword ? (
+                <EyeOff className="h-3.5 w-3.5 text-muted-foreground" />
+              ) : (
+                <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+              )}
             </Button>
-          ))}
+          </div>
         </div>
-      )}
-    </div>
+
+        {detected.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {detected.map((p) => (
+              <Button
+                key={p.url}
+                variant="secondary"
+                size="sm"
+                onClick={() => handleSelect(p.url)}
+                className="h-7 font-mono text-[10px]"
+              >
+                {p.url}
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
+    </SettingSection>
   );
 }

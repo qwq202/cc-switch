@@ -14,93 +14,92 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
+            color: #1a1a1a;
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
+            background: #ffffff;
         }
 
         .header {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
-        .content {
-            padding: 40px;
-        }
-
-        .section {
+            padding: 20px 0 40px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
             margin-bottom: 40px;
         }
 
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #111;
+        }
+
+        .header p {
+            font-size: 15px;
+            color: #666;
+        }
+
+        .content {
+            padding: 0;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
         .section h2 {
-            color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #ecf0f1;
+            color: #111;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
         }
 
         .version-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
+            background: #f0f0f0;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
             margin-left: 8px;
             vertical-align: middle;
         }
 
         .link-card {
-            background: #f8f9fa;
-            border-radius: 12px;
+            background: #ffffff;
+            border-radius: 8px;
             padding: 24px;
-            margin-bottom: 20px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
+            margin-bottom: 24px;
+            border: 1px solid #eaeaea;
+            transition: border-color 0.2s ease;
         }
 
         .link-card:hover {
-            border-color: #3498db;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
-            transform: translateY(-2px);
+            border-color: #ccc;
         }
 
         .link-card h3 {
-            color: #2c3e50;
-            font-size: 20px;
+            color: #111;
+            font-size: 18px;
+            font-weight: 600;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
 
         .link-card .description {
-            color: #7f8c8d;
+            color: #666;
             font-size: 14px;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             line-height: 1.6;
         }
 
@@ -108,71 +107,91 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            padding: 12px 24px;
+            background: #111;
+            color: #fff;
+            padding: 10px 20px;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 6px;
+            font-size: 14px;
             font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+            transition: all 0.2s ease;
+            border: 1px solid #111;
         }
 
         .deep-link:hover {
-            background: linear-gradient(135deg, #2980b9 0%, #1f6391 100%);
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
-            transform: translateY(-1px);
+            background: #333;
+            border-color: #333;
         }
 
         .deep-link:active {
-            transform: translateY(0);
+            background: #000;
+        }
+        
+        .btn-copy {
+            background: #ffffff !important;
+            color: #111 !important;
+            border: 1px solid #eaeaea !important;
+        }
+        
+        .btn-copy:hover {
+            background: #f9f9f9 !important;
+            border-color: #ccc !important;
         }
 
         .info-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
+            background: #fafafa;
+            border-left: 3px solid #ccc;
             padding: 16px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin-top: 20px;
         }
 
         .info-box h4 {
-            color: #856404;
+            color: #333;
             margin-bottom: 8px;
-            font-size: 16px;
+            font-size: 15px;
+            font-weight: 600;
         }
 
         .info-box ul {
-            list-style: disc;
-            margin-left: 20px;
-            color: #856404;
+            list-style: none;
+            margin-left: 0;
+            color: #555;
             font-size: 14px;
-            line-height: 1.8;
-            padding-left: 20px;
+            line-height: 1.6;
+            padding-left: 0;
+        }
+        
+        .info-box ul li::before {
+            content: "•";
+            color: #999;
+            margin-right: 8px;
         }
 
         .generator-section {
-            background: #e8f4f8;
-            border-radius: 12px;
-            padding: 30px;
+            background: #ffffff;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 32px;
             margin-top: 40px;
         }
 
         .generator-section h2 {
-            color: #2c3e50;
+            color: #111;
             margin-bottom: 24px;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 10px;
+            border-bottom: none;
+            padding-bottom: 0;
+            font-size: 20px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #2c3e50;
+            color: #333;
             font-weight: 500;
             font-size: 14px;
         }
@@ -181,143 +200,135 @@
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
             font-size: 14px;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.2s ease;
+            background: #fff;
+            color: #111;
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #3498db;
+            border-color: #111;
         }
 
         .btn {
-            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            background: #111;
             color: white;
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 12px 24px;
+            border: 1px solid #111;
+            border-radius: 6px;
+            font-size: 15px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+            transition: all 0.2s ease;
+            width: auto;
         }
 
         .btn:hover {
-            background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
-            transform: translateY(-1px);
-        }
-
-        .btn:active {
-            transform: translateY(0);
+            background: #333;
+            border-color: #333;
         }
 
         .result-box {
-            background: white;
-            border-radius: 8px;
+            background: #fafafa;
+            border-radius: 6px;
             padding: 20px;
-            margin-top: 20px;
-            border: 2px solid #3498db;
+            margin-top: 24px;
+            border: 1px solid #eaeaea;
         }
 
         .result-box strong {
-            color: #2c3e50;
-            font-size: 16px;
+            color: #111;
+            font-size: 15px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 12px;
         }
 
         .result-text {
-            background: #f8f9fa;
-            padding: 12px;
+            background: #ffffff;
+            padding: 16px;
             border-radius: 6px;
-            margin: 12px 0;
+            margin: 0 0 16px 0;
             word-break: break-all;
-            font-family: monospace;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
             font-size: 13px;
-            color: #2c3e50;
-            border: 1px solid #dee2e6;
-        }
-
-        .btn-copy {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            margin-right: 10px;
-        }
-
-        .btn-copy:hover {
-            background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%);
+            color: #333;
+            border: 1px solid #eaeaea;
         }
 
         .app-badge {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
             font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .badge-claude {
-            background: #e8f4f8;
-            color: #3498db;
-        }
-
-        .badge-codex {
-            background: #fef5e7;
-            color: #f39c12;
-        }
-
-        .badge-gemini {
-            background: #fdeef4;
-            color: #e91e63;
+            font-weight: 500;
+            border: 1px solid #eaeaea;
+            background: #fafafa;
+            color: #333;
         }
 
         .param-list {
-            background: #f8f9fa;
-            border-left: 3px solid #3498db;
-            padding: 12px;
-            border-radius: 6px;
-            margin: 12px 0;
+            background: #fafafa;
+            border-left: 2px solid #ddd;
+            padding: 12px 16px;
+            border-radius: 0 4px 4px 0;
+            margin: 16px 0;
             font-size: 13px;
-            line-height: 1.8;
-            color: #495057;
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            line-height: 1.6;
+            color: #555;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
 
         .param-tag {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 2px 6px;
+            border-radius: 3px;
             font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-right: 6px;
-            background: #3498db;
-            color: white;
+            font-weight: 500;
+            margin-right: 8px;
+            background: #eee;
+            color: #333;
         }
 
         .param-tag.optional {
-            background: #95a5a6;
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #eaeaea;
         }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .content {
-                padding: 20px;
-            }
-
-            .generator-section {
-                padding: 20px;
-            }
+        
+        /* Replace dark mode inline styles with minimalist overrides */
+        .code-block {
+            margin-top: 16px !important;
+            padding: 16px !important;
+            background: #fafafa !important;
+            color: #333 !important;
+            border: 1px solid #eaeaea !important;
+            border-radius: 6px !important;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+            font-size: 13px !important;
+            line-height: 1.5 !important;
+            overflow-x: auto !important;
         }
-    </style>
+        
+        .code-block div[style*="color: #95a5a6"] {
+            color: #888 !important;
+        }
+        
+        .code-block div[style*="color: #a8d08d"] {
+            color: #444 !important;
+        }
+        
+        .code-block div[style*="color: #f39c12"] {
+            color: #666 !important;
+            font-style: italic !important;
+        }
+</style>
 </head>
 
 <body>
@@ -352,8 +363,7 @@
                             class="deep-link">
                             📥 导入完整配置
                         </a>
-                        <button class="deep-link"
-                            style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); cursor: pointer; border: none;"
+                        <button class="deep-link btn-copy"
                             onclick="copyDeepLink('ccswitch://v1/import?resource=provider&app=claude&name=Claude%20Complete&configFormat=json&config=eyJlbnYiOnsiQU5USFJPUElDX0FVVEhfVE9LRU4iOiJzay1hbnQtdGVzdC1rZXkxMjMiLCJBTlRIUk9QSUNfQkFTRV9VUkwiOiJodHRwczovL2FwaS5hbnRocm9waWMuY29tL3YxIiwiQU5USFJPUElDX01PREVMIjoiY2xhdWRlLXNvbm5ldC00LjUiLCJBTlRIUk9QSUNfREVGQVVMVF9IQUlLVV9NT0RFTCI6ImNsYXVkZS1oYWlrdS00LjEiLCJBTlRIUk9QSUNfREVGQVVMVF9TT05ORVRfTU9ERUwiOiJjbGF1ZGUtc29ubmV0LTQuNSIsIkFOVEhST1BJQ19ERUZBVUxUX09QVVNfTU9ERUwiOiJjbGF1ZGUtb3B1cy00In19', this)">
                             📋 复制链接
                         </button>
@@ -392,8 +402,7 @@
                             class="deep-link">
                             📥 导入混合配置
                         </a>
-                        <button class="deep-link"
-                            style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); cursor: pointer; border: none;"
+                        <button class="deep-link btn-copy"
                             onclick="copyDeepLink('ccswitch://v1/import?resource=provider&app=claude&name=My%20Custom&apiKey=sk-ant-my-new-key&configFormat=json&config=eyJlbnYiOnsiQU5USFJPUElDX0JBU0VfVVJMIjoiaHR0cHM6Ly9hcGkuYW50aHJvcGljLmNvbS92MSIsIkFOVEhST1BJQ19NT0RFTCI6ImNsYXVkZS1zb25uZXQtNC41In19', this)">
                             📋 复制链接
                         </button>
@@ -410,7 +419,7 @@
                         <div style="color: #f39c12; margin-top: 8px;">// URL 参数覆盖: apiKey=sk-ant-my-new-key</div>
                     </div>
                     <div
-                        style="margin-top: 12px; padding: 10px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; font-size: 13px;">
+                        style="margin-top: 16px; padding: 12px; background: #fafafa; border-left: 3px solid #ccc; border-radius: 4px; font-size: 13px; color: #555;">
                         <strong>优先级规则:</strong> URL 参数 (apiKey) > 配置文件 (endpoint, model)
                     </div>
                 </div>
@@ -434,8 +443,7 @@
                             class="deep-link">
                             📥 导入 Codex 配置
                         </a>
-                        <button class="deep-link"
-                            style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); cursor: pointer; border: none;"
+                        <button class="deep-link btn-copy"
                             onclick="copyDeepLink('ccswitch://v1/import?resource=provider&app=codex&name=OpenAI%20Complete&configFormat=json&config=eyJhdXRoIjp7Ik9QRU5BSV9BUElfS0VZIjoic2stcHJvai10ZXN0LWtleTEyMyJ9LCJjb25maWciOiJbbW9kZWxfcHJvdmlkZXJzLm9wZW5haV1cbmJhc2VfdXJsID0gXCJodHRwczovL2FwaS5vcGVuYWkuY29tL3YxXCJcblxuW2dlbmVyYWxdXG5tb2RlbCA9IFwiZ3B0LTUuMVwiIn0=', this)">
                             📋 复制链接
                         </button>
@@ -476,8 +484,7 @@
                             class="deep-link">
                             📥 导入 Gemini 配置
                         </a>
-                        <button class="deep-link"
-                            style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); cursor: pointer; border: none;"
+                        <button class="deep-link btn-copy"
                             onclick="copyDeepLink('ccswitch://v1/import?resource=provider&app=gemini&name=Google%20Gemini&configFormat=json&config=eyJHRU1JTklfQVBJX0tFWSI6IkFJemFTeUR0ZXN0a2V5MTIzIiwiR0VNSU5JX0JBU0VfVVJMIjoiaHR0cHM6Ly9nZW5lcmF0aXZlbGFuZ3VhZ2UuZ29vZ2xlYXBpcy5jb20vdjFiZXRhIiwiR0VNSU5JX01PREVMIjoiZ2VtaW5pLTMtcHJvLXByZXZpZXcifQ==', this)">
                             📋 复制链接
                         </button>
@@ -511,8 +518,7 @@
                     <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                         <a href="ccswitch://v1/import?resource=mcp&apps=claude,codex&config=eyJtY3BTZXJ2ZXJzIjp7ImNvbnRleHQ3Ijp7ImNvbW1hbmQiOiJidW54IiwiYXJncyI6WyIteSIsIkB1cHN0YXNoL2NvbnRleHQ3LW1jcCIsIi0tYXBpLWtleSIsImN0eDdzay00ZGRkNGY2Ni1lNzUyLTQwMjItYjFmNi1jOGNmNjI3OWI4MGQiXSwiZW52Ijp7fX0sInNlcXVlbnRpYWwtdGhpbmtpbmciOnsiY29tbWFuZCI6Im5weCIsImFyZ3MiOlsiLXkiLCJAbW9kZWxjb250ZXh0cHJvdG9jb2wvc2VydmVyLXNlcXVlbnRpYWwtdGhpbmtpbmciXSwiZW52Ijp7fX19fQ==&enabled=true"
                             class="deep-link">📥 批量导入 2 个 MCP Servers</a>
-                        <button class="deep-link"
-                            style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); cursor: pointer; border: none;"
+                        <button class="deep-link btn-copy"
                             onclick="copyDeepLink('ccswitch://v1/import?resource=mcp&apps=claude,codex&config=eyJtY3BTZXJ2ZXJzIjp7ImNvbnRleHQ3Ijp7ImNvbW1hbmQiOiJidW54IiwiYXJncyI6WyIteSIsIkB1cHN0YXNoL2NvbnRleHQ3LW1jcCIsIi0tYXBpLWtleSIsImN0eDdzay00ZGRkNGY2Ni1lNzUyLTQwMjItYjFmNi1jOGNmNjI3OWI4MGQiXSwiZW52Ijp7fX0sInNlcXVlbnRpYWwtdGhpbmtpbmciOnsiY29tbWFuZCI6Im5weCIsImFyZ3MiOlsiLXkiLCJAbW9kZWxjb250ZXh0cHJvdG9jb2wvc2VydmVyLXNlcXVlbnRpYWwtdGhpbmtpbmciXSwiZW52Ijp7fX19fQ==&enabled=true', this)">📋
                             复制</button>
                     </div>
@@ -564,8 +570,7 @@
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                         <a href="ccswitch://v1/import?resource=prompt&app=claude&name=代码审查专家&content=IyDku6PnoIHlrqHmn6XkuJPlrrYKCuS9oOaYr+S4gOS9jeaciee7j+mqjOeahOS7o+eggeWuoeafpeWRmO+8jOivt+WcqOS7o+eggeWuoeafpeWbnuWkjeeahOaXtuWAmeWBmuWQr+S4i+OAgg==&description=专注代码质量&enabled=true"
                             class="deep-link">📥 导入</a>
-                        <button class="deep-link"
-                            style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); cursor: pointer; border: none;"
+                        <button class="deep-link btn-copy"
                             onclick="copyDeepLink('ccswitch://v1/import?resource=prompt&app=claude&name=代码审查专家&content=IyDku6PnoIHlrqHmn6XkuJPlrrYKCuS9oOaYr+S4gOS9jeaciee7j+mqjOeahOS7o+eggeWuoeafpeWRmO+8jOivt+WcqOS7o+eggeWuoeafpeWbnuWkjeeahOaXtuWAmeWBmuWQr+S4i+OAgg==&description=专注代码质量&enabled=true', this)">📋
                             复制</button>
                     </div>
@@ -604,8 +609,7 @@
                             class="deep-link">
                             📥 导入 Skill 仓库示例
                         </a>
-                        <button class="deep-link"
-                            style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); cursor: pointer; border: none;"
+                        <button class="deep-link btn-copy"
                             onclick="copyDeepLink('ccswitch://v1/import?resource=skill&repo=example/claude-skills&branch=main&skills_path=skills&directory=my-skills', this)">
                             📋 复制链接
                         </button>

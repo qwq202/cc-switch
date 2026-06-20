@@ -294,39 +294,36 @@ export function ProviderCard({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border border-border p-4 transition-all duration-300",
-        "bg-card text-card-foreground group",
-        isAutoFailoverEnabled || isProxyTakeover
-          ? "hover:border-emerald-500/50"
-          : "hover:border-border-active",
-        shouldUseGreen &&
-          "border-emerald-500/60 shadow-sm shadow-emerald-500/10",
-        shouldUseBlue && "border-blue-500/60 shadow-sm shadow-blue-500/10",
-        !(isActiveProvider || hasPersistentConfigHighlight) &&
-          "hover:shadow-sm",
+        "relative p-4 transition-all duration-200",
+        "bg-white dark:bg-zinc-950 text-card-foreground group flex flex-col justify-center",
+        shouldUseGreen
+          ? "bg-emerald-500/[0.01] dark:bg-emerald-500/[0.02]"
+          : shouldUseBlue
+            ? "bg-zinc-900/[0.015] dark:bg-zinc-100/[0.02]"
+            : "hover:bg-zinc-500/[0.02] dark:hover:bg-zinc-100/[0.01]",
         dragHandleProps?.isDragging &&
-          "cursor-grabbing border-primary shadow-lg scale-105 z-10",
+          "cursor-grabbing border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xl scale-[1.01] rounded-xl z-10",
       )}
     >
-      <div
-        className={cn(
-          "absolute inset-0 bg-gradient-to-r to-transparent transition-opacity duration-500 pointer-events-none",
-          shouldUseGreen && "from-emerald-500/10",
-          shouldUseBlue && "from-blue-500/10",
-          !shouldUseGreen && !shouldUseBlue && "from-primary/10",
-          isActiveProvider || hasPersistentConfigHighlight
-            ? "opacity-100"
-            : "opacity-0",
-        )}
-      />
-      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 items-center gap-2">
+      {/* 3px 宽的精致左侧指示轨 */}
+      {isActiveProvider && (
+        <div
+          className={cn(
+            "absolute left-0 top-0 bottom-0 w-[3px]",
+            shouldUseGreen ? "bg-emerald-500" : "bg-zinc-900 dark:bg-zinc-100",
+          )}
+        />
+      )}
+
+      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pl-2">
+        <div className="flex flex-1 items-center gap-2.5 min-w-0">
           <button
             type="button"
             className={cn(
               "-ml-1.5 flex-shrink-0 cursor-grab active:cursor-grabbing p-1.5",
-              "text-muted-foreground/50 hover:text-muted-foreground transition-colors",
-              dragHandleProps?.isDragging && "cursor-grabbing",
+              "text-muted-foreground/50 hover:text-muted-foreground transition-all duration-200",
+              "opacity-0 group-hover:opacity-100 focus-within:opacity-100",
+              dragHandleProps?.isDragging && "cursor-grabbing opacity-100",
             )}
             aria-label={t("provider.dragHandle")}
             {...(dragHandleProps?.attributes ?? {})}
@@ -335,29 +332,29 @@ export function ProviderCard({
             <GripVertical className="h-4 w-4" />
           </button>
 
-          <div className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center border border-border group-hover:scale-105 transition-transform duration-300">
+          <div className="h-8 w-8 flex items-center justify-center transition-colors duration-200">
             <ProviderIcon
               icon={provider.icon}
               name={provider.name}
               color={provider.iconColor}
-              size={20}
+              size={24}
             />
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-1.5 flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 min-h-7">
-              <h3 className="text-base font-semibold leading-none">
+              <h3 className="text-[15px] font-semibold leading-none text-zinc-800 dark:text-zinc-200">
                 {provider.name}
               </h3>
 
               {isOmo && (
-                <span className="inline-flex items-center rounded-md bg-violet-100 px-1.5 py-0.5 text-[10px] font-semibold text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">
+                <span className="inline-flex items-center rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700">
                   OMO
                 </span>
               )}
 
               {isOmoSlim && (
-                <span className="inline-flex items-center rounded-md bg-indigo-100 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+                <span className="inline-flex items-center rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700">
                   Slim
                 </span>
               )}
@@ -365,7 +362,7 @@ export function ProviderCard({
               {appId === "claude-desktop" &&
                 provider.category !== "official" &&
                 provider.meta?.claudeDesktopMode === "proxy" && (
-                  <span className="inline-flex items-center rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
+                  <span className="inline-flex items-center rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700">
                     {t("claudeDesktop.modeProxy", {
                       defaultValue: "需要路由",
                     })}
@@ -376,7 +373,7 @@ export function ProviderCard({
                 provider.category !== "official" &&
                 provider.meta?.apiFormat &&
                 provider.meta.apiFormat !== "anthropic" && (
-                  <span className="inline-flex items-center rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
+                  <span className="inline-flex items-center rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700">
                     {t("claudeCode.needsRouting", {
                       defaultValue: "需要路由",
                     })}
@@ -384,7 +381,7 @@ export function ProviderCard({
                 )}
 
               {codexNeedsRouting && (
-                <span className="inline-flex items-center rounded-md bg-sky-100 px-1.5 py-0.5 text-[10px] font-semibold text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
+                <span className="inline-flex items-center rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700">
                   {t("codex.needsRouting", {
                     defaultValue: "需要路由",
                   })}
@@ -392,7 +389,7 @@ export function ProviderCard({
               )}
 
               {appId === "claude" && provider.category === "official" && (
-                <span className="inline-flex items-center rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-700/60 dark:text-slate-200">
+                <span className="inline-flex items-center rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700">
                   {t("claudeCode.noRoutingSupport", {
                     defaultValue: "不支持路由",
                   })}
@@ -400,7 +397,7 @@ export function ProviderCard({
               )}
 
               {appId === "codex" && provider.category === "official" && (
-                <span className="inline-flex items-center rounded-md bg-slate-200 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-700/60 dark:text-slate-200">
+                <span className="inline-flex items-center rounded-sm bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-700 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700">
                   {t("codex.noRoutingSupport", {
                     defaultValue: "不支持路由",
                   })}
@@ -446,94 +443,98 @@ export function ProviderCard({
               )}
             </div>
 
-            {displayUrl && (
-              <button
-                type="button"
-                onClick={handleOpenWebsite}
-                className={cn(
-                  "inline-flex items-center text-sm max-w-[280px]",
-                  isClickableUrl
-                    ? "text-blue-500 transition-colors hover:underline dark:text-blue-400 cursor-pointer"
-                    : "text-muted-foreground cursor-default",
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-zinc-400">
+              {displayUrl && (
+                <button
+                  type="button"
+                  onClick={handleOpenWebsite}
+                  className={cn(
+                    "inline-flex items-center transition-colors shrink-0",
+                    isClickableUrl
+                      ? "hover:text-zinc-600 hover:underline dark:hover:text-zinc-300 cursor-pointer"
+                      : "cursor-default",
+                  )}
+                  title={displayUrl}
+                  disabled={!isClickableUrl}
+                >
+                  <span className="truncate max-w-[200px] sm:max-w-[320px]">
+                    {displayUrl}
+                  </span>
+                </button>
+              )}
+
+              {displayUrl &&
+                (usageEnabled ||
+                  isCopilot ||
+                  isCodexOauth ||
+                  officialSubscriptionEnabled) && (
+                  <span className="text-zinc-200 dark:text-zinc-800 select-none">
+                    |
+                  </span>
                 )}
-                title={displayUrl}
-                disabled={!isClickableUrl}
-              >
-                <span className="truncate">{displayUrl}</span>
-              </button>
-            )}
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                {isCopilot ? (
+                  <CopilotQuotaFooter
+                    meta={provider.meta}
+                    inline={true}
+                    isCurrent={isCurrent}
+                  />
+                ) : isCodexOauth ? (
+                  <CodexOauthQuotaFooter
+                    meta={provider.meta}
+                    inline={true}
+                    isCurrent={isCurrent}
+                  />
+                ) : isOfficial ? (
+                  officialSubscriptionEnabled ? (
+                    <SubscriptionQuotaFooter
+                      appId={appId}
+                      inline={true}
+                      isCurrent={isCurrent}
+                      autoQueryInterval={
+                        provider.meta?.usage_script?.autoQueryInterval ?? 0
+                      }
+                    />
+                  ) : null
+                ) : (
+                  <UsageFooter
+                    provider={provider}
+                    providerId={provider.id}
+                    appId={appId}
+                    usageEnabled={usageEnabled}
+                    isCurrent={isCurrent}
+                    isInConfig={isInConfig}
+                    inline={true}
+                  />
+                )}
+
+                {hasMultiplePlans && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsExpanded(!isExpanded);
+                    }}
+                    className="p-0.5 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-400 hover:text-zinc-600 flex-shrink-0"
+                    title={
+                      isExpanded
+                        ? t("usage.collapse", { defaultValue: "收起" })
+                        : t("usage.expand", { defaultValue: "展开" })
+                    }
+                  >
+                    {isExpanded ? (
+                      <ChevronUp size={12} />
+                    ) : (
+                      <ChevronDown size={12} />
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
         <div className="flex items-center ml-auto min-w-0 gap-3">
-          <div className="ml-auto">
-            <div className="flex items-center gap-1">
-              {isCopilot ? (
-                <CopilotQuotaFooter
-                  meta={provider.meta}
-                  inline={true}
-                  isCurrent={isCurrent}
-                />
-              ) : isCodexOauth ? (
-                <CodexOauthQuotaFooter
-                  meta={provider.meta}
-                  inline={true}
-                  isCurrent={isCurrent}
-                />
-              ) : isOfficial ? (
-                officialSubscriptionEnabled ? (
-                  <SubscriptionQuotaFooter
-                    appId={appId}
-                    inline={true}
-                    isCurrent={isCurrent}
-                    autoQueryInterval={
-                      provider.meta?.usage_script?.autoQueryInterval ?? 0
-                    }
-                  />
-                ) : null
-              ) : hasMultiplePlans ? (
-                <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">
-                    {t("usage.multiplePlans", {
-                      count: usage?.data?.length || 0,
-                      defaultValue: `${usage?.data?.length || 0} 个套餐`,
-                    })}
-                  </span>
-                </div>
-              ) : (
-                <UsageFooter
-                  provider={provider}
-                  providerId={provider.id}
-                  appId={appId}
-                  usageEnabled={usageEnabled}
-                  isCurrent={isCurrent}
-                  isInConfig={isInConfig}
-                  inline={true}
-                />
-              )}
-              {hasMultiplePlans && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsExpanded(!isExpanded);
-                  }}
-                  className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-500 dark:text-gray-400 flex-shrink-0"
-                  title={
-                    isExpanded
-                      ? t("usage.collapse", { defaultValue: "收起" })
-                      : t("usage.expand", { defaultValue: "展开" })
-                  }
-                >
-                  {isExpanded ? (
-                    <ChevronUp size={14} />
-                  ) : (
-                    <ChevronDown size={14} />
-                  )}
-                </button>
-              )}
-            </div>
-          </div>
-
           <div className="flex items-center gap-1.5 flex-shrink-0 opacity-0 pointer-events-none group-hover:opacity-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-200">
             <ProviderActions
               appId={appId}
@@ -548,11 +549,6 @@ export function ProviderCard({
               onEdit={() => onEdit(provider)}
               onDuplicate={() => onDuplicate(provider)}
               onTest={
-                // 连通检测对第三方/自定义/Copilot/Codex-OAuth 供应商开放（这些正是旧的
-                // 真实请求探测会误报、而可达性探测能正确处理的对象）。官方供应商
-                // (category === "official") 一律隐藏：它们 base_url 故意留空、走客户端
-                // 默认/OAuth 端点，cc-switch 没有可靠的探测目标（尤其 Claude Desktop
-                // 官方是原生 1P 模式，根本不在请求路径上）。
                 onTest && provider.category !== "official"
                   ? () => onTest(provider)
                   : undefined
@@ -577,7 +573,6 @@ export function ProviderCard({
               isAutoFailoverEnabled={isAutoFailoverEnabled}
               isInFailoverQueue={isInFailoverQueue}
               onToggleFailover={onToggleFailover}
-              // OpenClaw: default model
               isDefaultModel={isDefaultModel}
               onSetAsDefault={onSetAsDefault}
             />

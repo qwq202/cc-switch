@@ -5,6 +5,20 @@ All notable changes to CC Switch will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.16.5] - 2026-06-20
+
+### Changed
+
+- Refined the Settings experience with a denser full-window layout and reusable settings rows, sections, and segmented controls.
+- Polished provider, proxy, usage, and app-switcher surfaces so the refreshed interface is more consistent across light and dark themes.
+
+### Fixed
+
+- Fixed dark-mode segmented controls so inactive settings options no longer inherit the blue primary-button background, while selected options remain clearly highlighted.
+- Fixed settings text colors and active sidebar states that could become low contrast in dark mode.
+- Improved usage footer parsing for localized reset times and decimal percentage values.
+- Restored the Claude Desktop settings landmark expected by the settings page tests.
+
 ## [3.16.3] - 2026-06-14
 
 Development since v3.16.2 focuses on getting usage accounting right end-to-end — billing route-takeover and format-conversion traffic by the real upstream model and pricing basis (schema v11), counting Claude Code Workflow sub-agent sessions, folding Claude Desktop into the Claude view, refreshing the model pricing seed, and reworking the usage dashboard with global provider/model filters, brand-icon toolbars, and far more resilient quota queries — while hardening the proxy (mislabeled SSE bodies, Codex image rectification, OAuth token and takeover-residue recovery, Hermes duplicate YAML keys), reworking provider configuration (a custom User-Agent override, a unified Codex advanced section, searchable preset selection, a Fable 5 tier, and refreshed Kimi/Unity2/Volcengine/MiniMax presets), and smoothing the update, About-panel, and provider-health experiences.

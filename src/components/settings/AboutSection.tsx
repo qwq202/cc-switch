@@ -4,13 +4,10 @@ import {
   Copy,
   ExternalLink,
   Github,
-  Globe,
   Info,
   Loader2,
   RefreshCw,
   Terminal,
-  CheckCircle2,
-  AlertCircle,
   ArrowUpCircle,
   ChevronDown,
   Stethoscope,
@@ -808,81 +805,69 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-6"
+      transition={{ duration: 0.2 }}
+      className="space-y-5"
     >
-      <header className="space-y-1">
-        <h3 className="text-sm font-medium">{t("common.about")}</h3>
-        <p className="text-xs text-muted-foreground">
-          {t("settings.aboutHint")}
-        </p>
-      </header>
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3, delay: 0.1 }}
-        className="rounded-xl border border-border bg-gradient-to-br from-card/80 to-card/40 p-6 space-y-5 shadow-sm"
-      >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-8">
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2">
-                <img src={appIcon} alt="CC Switch" className="h-5 w-5" />
-                <h4 className="text-lg font-semibold text-foreground">
+      <div className="overflow-hidden rounded-[10px] border border-border/70 bg-card shadow-sm">
+        <div className="space-y-4 p-5 text-left">
+          {/* 第一行：左侧 Logo 与基本信息，右侧 Fable 5 Banner */}
+          <div className="flex items-center justify-between w-full border-b border-border/60 pb-4">
+            <div className="flex items-center gap-4">
+              <img
+                src={appIcon}
+                alt="CC Switch"
+                className="h-10 w-10 shrink-0"
+              />
+              <div className="space-y-1">
+                <h4 className="text-base font-bold text-foreground leading-none tracking-tight">
                   CC Switch
                 </h4>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="gap-1.5 bg-background/80">
-                  <span className="text-muted-foreground">
-                    {t("common.version")}
-                  </span>
-                  {isLoadingVersion ? (
-                    <Loader2 className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <span className="font-medium">{`v${displayVersion}`}</span>
-                  )}
-                </Badge>
-                {isPortable && (
-                  <Badge variant="secondary" className="gap-1.5">
-                    <Info className="h-3 w-3" />
-                    {t("settings.portableMode")}
+                <div className="flex items-center gap-1.5">
+                  <Badge
+                    variant="outline"
+                    className="text-[10px] h-5 py-0 px-1.5 bg-background/80"
+                  >
+                    <span className="text-muted-foreground mr-1">
+                      {t("common.version")}
+                    </span>
+                    {isLoadingVersion ? (
+                      <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                    ) : (
+                      `v${displayVersion}`
+                    )}
                   </Badge>
-                )}
+                  {isPortable && (
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] h-5 py-0 px-1.5 gap-1"
+                    >
+                      <Info className="h-3 w-3" />
+                      {t("settings.portableMode")}
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
             <img
               src={fable5VerifiedBanner}
               alt="Fable 5 Verified"
-              className="h-16 w-auto shrink-0 select-none"
+              className="h-10 w-auto shrink-0 select-none opacity-90 dark:opacity-85"
               draggable={false}
             />
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => settingsApi.openExternal("https://ccswitch.io")}
-              className="h-8 gap-1.5 text-xs"
-            >
-              <Globe className="h-3.5 w-3.5" />
-              {t("settings.officialWebsite")}
-            </Button>
+          {/* 第二行：操作按钮组 */}
+          <div className="flex flex-wrap items-center gap-2 justify-end w-full pt-0.5">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() =>
-                settingsApi.openExternal(
-                  "https://github.com/farion1231/cc-switch",
-                )
+                settingsApi.openExternal("https://github.com/qwq202/cc-switch")
               }
-              className="h-8 gap-1.5 text-xs"
+              className="h-7 px-3 gap-1.5 text-xs font-semibold shadow-sm hover:bg-muted/50"
             >
               <Github className="h-3.5 w-3.5" />
               {t("settings.github")}
@@ -892,7 +877,7 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
               variant="outline"
               size="sm"
               onClick={handleOpenReleaseNotes}
-              className="h-8 gap-1.5 text-xs"
+              className="h-7 px-3 gap-1.5 text-xs font-semibold shadow-sm hover:bg-muted/50"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               {t("settings.releaseNotes")}
@@ -902,7 +887,7 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
               size="sm"
               onClick={handleCheckUpdate}
               disabled={isChecking || isDownloading}
-              className="h-8 gap-1.5 text-xs"
+              className="h-7 px-3 gap-1.5 text-xs font-semibold shadow-sm"
             >
               {isDownloading ? (
                 <>
@@ -929,36 +914,34 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
               )}
             </Button>
           </div>
-        </div>
 
-        {hasUpdate && updateInfo && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="rounded-lg bg-primary/10 border border-primary/20 px-4 py-3 text-sm"
-          >
-            <p className="font-medium text-primary mb-1">
-              {t("settings.updateAvailable", {
-                version: updateInfo.availableVersion,
-              })}
-            </p>
-            {updateInfo.notes && (
-              <p className="text-muted-foreground line-clamp-3 leading-relaxed">
-                {updateInfo.notes}
+          {hasUpdate && updateInfo && (
+            <div className="rounded-lg border border-primary/20 bg-primary/10 px-4 py-3 text-sm text-left">
+              <p className="mb-1 font-semibold text-primary">
+                {t("settings.updateAvailable", {
+                  version: updateInfo.availableVersion,
+                })}
               </p>
-            )}
-          </motion.div>
-        )}
-      </motion.div>
+              {updateInfo.notes && (
+                <p className="line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+                  {updateInfo.notes}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
 
-      <div className="space-y-3">
+      <section className="space-y-1.5">
         <div className="flex flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
-          <h3 className="text-sm font-medium">{t("settings.localEnvCheck")}</h3>
+          <h3 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            {t("settings.localEnvCheck")}
+          </h3>
           <div className="flex flex-wrap items-center gap-2">
             <Button
               size="sm"
               variant="outline"
-              className="h-7 gap-1.5 text-xs"
+              className="h-7 gap-1.5 text-xs font-medium shadow-sm hover:bg-muted/50"
               onClick={() => handleDiagnoseAll()}
               disabled={isLoadingTools || isAnyBusy || isDiagnosingAll}
             >
@@ -974,7 +957,7 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
             <Button
               size="sm"
               variant="outline"
-              className="h-7 gap-1.5 text-xs"
+              className="h-7 gap-1.5 text-xs font-medium shadow-sm hover:bg-muted/50"
               onClick={() => loadAllToolVersions({ force: true })}
               disabled={isLoadingTools || isAnyBusy}
             >
@@ -987,7 +970,7 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
             </Button>
             <Button
               size="sm"
-              className="h-7 gap-1.5 text-xs"
+              className="h-7 gap-1.5 text-xs font-medium shadow-sm"
               onClick={() => handleRunToolAction(updatableToolNames, "update")}
               disabled={
                 isLoadingTools || isAnyBusy || updatableToolNames.length === 0
@@ -1005,16 +988,11 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
           </div>
         </div>
 
-        <div className="grid gap-3 px-1 sm:grid-cols-2 xl:grid-cols-3">
-          {TOOL_NAMES.map((toolName, index) => {
+        <div className="flex flex-col gap-0 overflow-hidden rounded-[10px] border border-border/70 bg-card shadow-sm divide-y divide-border/60">
+          {TOOL_NAMES.map((toolName) => {
             const tool = toolVersionByName.get(toolName);
             const appConfig = APP_ICON_MAP[TOOL_APP_IDS[toolName]];
             const displayName = TOOL_DISPLAY_NAMES[toolName];
-            // 单卡片 loading 用「结果是否已到」而非「整批是否结束」驱动，实现渐进式刷新：
-            //   - loadingTools[t]：本工具探测在途（首次加载或单工具刷新）；
-            //   - isLoadingTools && !has(t)：整批进行中且该工具尚未返回——覆盖首帧/刷新时
-            //     未完成卡片的 loading 外观。某工具结果一落进 toolVersions，has(t) 即为 true，
-            //     该卡片立刻脱离 loading（哪怕全局 isLoadingTools 还为 true），其它卡片不受影响。
             const isToolVersionLoading =
               Boolean(loadingTools[toolName]) ||
               (isLoadingTools && !toolVersionByName.has(toolName));
@@ -1022,10 +1000,7 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
               tool?.version,
               tool?.latest_version,
             );
-            // 已安装却跑不起来（如 Node 版本不达标）：用它区分卡片文案与按钮，避免把
-            // "装了跑不起来"误判成"未安装"而给出无用的安装按钮（重装同一版本解决不了）。
             const installedButBroken = Boolean(tool?.installed_but_broken);
-            // loading 和 broken 都没有可执行动作；其余按是否已装/是否过期选择。
             const action: ToolLifecycleAction | null =
               isToolVersionLoading || installedButBroken
                 ? null
@@ -1039,25 +1014,20 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
             const conflicts = toolDiagnostics[toolName];
 
             return (
-              <motion.div
-                key={toolName}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.15 + index * 0.04 }}
-                className="flex min-h-[150px] flex-col gap-3 rounded-xl border border-border bg-gradient-to-br from-card/80 to-card/40 p-4 shadow-sm transition-colors hover:border-primary/30"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-2">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-background/80 text-muted-foreground">
+              <div key={toolName} className="flex flex-col gap-3 p-4 text-left">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  {/* 左侧：微标 + 名称与环境 */}
+                  <div className="flex items-center gap-3 min-w-[140px]">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-background border border-border shadow-sm">
                       {appConfig?.icon ?? <Terminal className="h-4 w-4" />}
                     </span>
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-medium">
+                    <div className="text-left">
+                      <div className="text-xs font-semibold text-zinc-900 dark:text-zinc-50 leading-none">
                         {displayName}
                       </div>
                       {tool?.env_type && ENV_BADGE_CONFIG[tool.env_type] && (
                         <span
-                          className={`mt-1 inline-flex w-fit text-[9px] px-1.5 py-0.5 rounded-full border ${ENV_BADGE_CONFIG[tool.env_type].className}`}
+                          className={`mt-1.5 inline-flex text-[9px] px-1.5 py-0.5 rounded-full border leading-none font-medium ${ENV_BADGE_CONFIG[tool.env_type].className}`}
                         >
                           {t(ENV_BADGE_CONFIG[tool.env_type].labelKey)}
                           {tool.wsl_distro ? ` · ${tool.wsl_distro}` : ""}
@@ -1065,104 +1035,162 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
                       )}
                     </div>
                   </div>
-                  {isToolVersionLoading ? (
-                    <Loader2 className="mt-1 h-4 w-4 animate-spin text-muted-foreground" />
-                  ) : tool?.version ? (
-                    isOutdated ? (
-                      <span className="mt-1 shrink-0 rounded-full border border-yellow-500/20 bg-yellow-500/10 px-1.5 py-0.5 text-[10px] text-yellow-600 dark:text-yellow-400">
-                        {t("settings.updateAvailableShort")}
+
+                  {/* 中间：版本对比平铺 */}
+                  <div className="flex-1 flex items-center justify-start gap-8 text-xs font-medium px-4">
+                    <div className="flex flex-col items-start gap-0.5">
+                      <span className="text-[9px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">
+                        {t("settings.currentVersion")}
                       </span>
-                    ) : (
-                      <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-green-500" />
-                    )
-                  ) : (
-                    <AlertCircle className="mt-1 h-4 w-4 shrink-0 text-yellow-500" />
-                  )}
-                </div>
-
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-muted-foreground">
-                      {t("settings.currentVersion")}
-                    </span>
-                    <span
-                      className="min-w-0 truncate font-mono text-foreground"
-                      title={title}
-                    >
-                      {isToolVersionLoading
-                        ? t("common.loading")
-                        : tool?.version
-                          ? tool.version
-                          : installedButBroken
-                            ? t("settings.installedNotRunnable")
-                            : t("common.notInstalled")}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-muted-foreground">
-                      {t("settings.latestVersion")}
-                    </span>
-                    <span className="min-w-0 truncate font-mono text-foreground">
-                      {isToolVersionLoading
-                        ? t("common.loading")
-                        : tool?.latest_version || t("common.unknown")}
-                    </span>
-                  </div>
-                  {!isToolVersionLoading && !tool?.version && tool?.error && (
-                    <div className="truncate text-[11px] text-muted-foreground">
-                      {tool.error}
+                      <span
+                        className="font-mono text-xs text-zinc-700 dark:text-zinc-300 truncate max-w-[120px]"
+                        title={title}
+                      >
+                        {isToolVersionLoading
+                          ? t("common.loading")
+                          : tool?.version
+                            ? tool.version
+                            : installedButBroken
+                              ? t("settings.installedNotRunnable")
+                              : t("common.notInstalled")}
+                      </span>
                     </div>
-                  )}
+                    <div className="flex flex-col items-start gap-0.5">
+                      <span className="text-[9px] text-zinc-400 dark:text-zinc-500 uppercase tracking-wider font-semibold">
+                        {t("settings.latestVersion")}
+                      </span>
+                      <span className="font-mono text-xs text-zinc-700 dark:text-zinc-300">
+                        {isToolVersionLoading
+                          ? t("common.loading")
+                          : tool?.latest_version || t("common.unknown")}
+                      </span>
+                    </div>
+                    {!isToolVersionLoading && !tool?.version && tool?.error && (
+                      <div
+                        className="text-[10px] text-zinc-400 dark:text-zinc-500 max-w-[150px] truncate"
+                        title={tool.error}
+                      >
+                        {tool.error}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* 右侧：选择器 + 状态 + 操作按钮 */}
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    {tool?.env_type === "wsl" && (
+                      <div className="flex items-center gap-1">
+                        <Select
+                          value={wslShellByTool[toolName]?.wslShell || "auto"}
+                          onValueChange={(v) =>
+                            handleToolShellChange(toolName, v)
+                          }
+                          disabled={isToolVersionLoading || isAnyBusy}
+                        >
+                          <SelectTrigger className="h-7 w-[68px] text-[10px] px-1.5 border border-zinc-200 dark:border-zinc-800 bg-background shadow-sm rounded-md">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="auto" className="text-[10px]">
+                              {t("common.auto")}
+                            </SelectItem>
+                            {WSL_SHELL_OPTIONS.map((shell) => (
+                              <SelectItem
+                                key={shell}
+                                value={shell}
+                                className="text-[10px]"
+                              >
+                                {shell}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Select
+                          value={
+                            wslShellByTool[toolName]?.wslShellFlag || "auto"
+                          }
+                          onValueChange={(v) =>
+                            handleToolShellFlagChange(toolName, v)
+                          }
+                          disabled={isToolVersionLoading || isAnyBusy}
+                        >
+                          <SelectTrigger className="h-7 w-[68px] text-[10px] px-1.5 border border-zinc-200 dark:border-zinc-800 bg-background shadow-sm rounded-md">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="auto" className="text-[10px]">
+                              {t("common.auto")}
+                            </SelectItem>
+                            {WSL_SHELL_FLAG_OPTIONS.map((flag) => (
+                              <SelectItem
+                                key={flag}
+                                value={flag}
+                                className="text-[10px]"
+                              >
+                                {flag}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+
+                    {isToolVersionLoading ? (
+                      <span className="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
+                        {t("common.loading")}
+                      </span>
+                    ) : tool?.version ? (
+                      isOutdated ? (
+                        <span className="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-2 py-0.5 text-[10px] text-yellow-600 dark:text-yellow-400 font-medium">
+                          {t("settings.updateAvailableShort")}
+                        </span>
+                      ) : (
+                        <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          {t("settings.toolReady")}
+                        </span>
+                      )
+                    ) : (
+                      <span className="rounded-full border border-zinc-200 bg-zinc-100 dark:bg-zinc-800 dark:border-zinc-700 px-2 py-0.5 text-[10px] text-zinc-500 dark:text-zinc-400 font-medium">
+                        {t("common.notInstalled")}
+                      </span>
+                    )}
+
+                    {!isToolVersionLoading && !installedButBroken && action && (
+                      <Button
+                        size="sm"
+                        variant={action === "install" ? "outline" : "default"}
+                        className="h-7 gap-1 text-[11px] px-2.5 shadow-sm"
+                        onClick={() => handleRunToolAction([toolName], action)}
+                        disabled={isToolVersionLoading || isAnyBusy}
+                      >
+                        {runningAction ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : action === "install" ? (
+                          <Download className="h-3 w-3" />
+                        ) : (
+                          <ArrowUpCircle className="h-3 w-3" />
+                        )}
+                        {action === "install"
+                          ? t("settings.toolInstall")
+                          : t("settings.toolUpdate")}
+                      </Button>
+                    )}
+
+                    {installedButBroken && (
+                      <span className="text-[10px] text-yellow-600 dark:text-yellow-400 font-medium">
+                        {t("settings.toolCheckEnv")}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                {tool?.env_type === "wsl" && (
-                  <div className="flex flex-wrap gap-2">
-                    <Select
-                      value={wslShellByTool[toolName]?.wslShell || "auto"}
-                      onValueChange={(v) => handleToolShellChange(toolName, v)}
-                      disabled={isToolVersionLoading || isAnyBusy}
-                    >
-                      <SelectTrigger className="h-7 w-[82px] text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="auto">{t("common.auto")}</SelectItem>
-                        {WSL_SHELL_OPTIONS.map((shell) => (
-                          <SelectItem key={shell} value={shell}>
-                            {shell}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Select
-                      value={wslShellByTool[toolName]?.wslShellFlag || "auto"}
-                      onValueChange={(v) =>
-                        handleToolShellFlagChange(toolName, v)
-                      }
-                      disabled={isToolVersionLoading || isAnyBusy}
-                    >
-                      <SelectTrigger className="h-7 w-[82px] text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="auto">{t("common.auto")}</SelectItem>
-                        {WSL_SHELL_FLAG_OPTIONS.map((flag) => (
-                          <SelectItem key={flag} value={flag}>
-                            {flag}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-
-                {/* 多处安装冲突诊断结果：仅在懒触发后有数据时渲染。 */}
+                {/* 多处安装冲突诊断结果 */}
                 {conflicts && conflicts.length > 0 && (
-                  <div className="space-y-1.5 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-2.5">
-                    <div className="text-[11px] font-medium text-yellow-600 dark:text-yellow-400">
+                  <div className="space-y-1.5 rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-3 mt-1.5">
+                    <div className="text-[10px] font-semibold text-yellow-600 dark:text-yellow-400">
                       {t("settings.toolConflictTitle")}
                     </div>
-                    <p className="text-[10px] leading-snug text-muted-foreground">
+                    <p className="text-[10px] leading-relaxed text-zinc-500 dark:text-zinc-400">
                       {t("settings.toolConflictHint")}
                     </p>
                     <ul className="space-y-1.5">
@@ -1174,49 +1202,11 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
                     </ul>
                   </div>
                 )}
-
-                <div className="mt-auto flex items-center justify-end">
-                  {isToolVersionLoading ? (
-                    <span className="text-xs text-muted-foreground">
-                      {t("common.loading")}
-                    </span>
-                  ) : installedButBroken ? (
-                    // 已安装但跑不起来：重装无济于事，不给按钮，给一句指向环境的提示。
-                    <span className="text-xs text-yellow-600 dark:text-yellow-400">
-                      {t("settings.toolCheckEnv")}
-                    </span>
-                  ) : action ? (
-                    <Button
-                      size="sm"
-                      variant={action === "install" ? "outline" : "default"}
-                      className="h-7 gap-1.5 text-xs"
-                      onClick={() => handleRunToolAction([toolName], action)}
-                      disabled={isToolVersionLoading || isAnyBusy}
-                    >
-                      {runningAction ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : action === "install" ? (
-                        <Download className="h-3.5 w-3.5" />
-                      ) : (
-                        <ArrowUpCircle className="h-3.5 w-3.5" />
-                      )}
-                      {/* loading 时文案保持不变、仅图标切换为 spinner，
-                          按钮宽度恒定，避免"升级"→"升级中…"导致的抖动。 */}
-                      {action === "install"
-                        ? t("settings.toolInstall")
-                        : t("settings.toolUpdate")}
-                    </Button>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">
-                      {t("settings.toolReady")}
-                    </span>
-                  )}
-                </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
-      </div>
+      </section>
 
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -1238,7 +1228,7 @@ export function AboutSection({ isPortable }: AboutSectionProps) {
           {t("settings.manualInstallCommands")}
         </button>
         {showInstallCommands && (
-          <div className="rounded-xl border border-border bg-gradient-to-br from-card/80 to-card/40 p-4 space-y-3 shadow-sm">
+          <div className="overflow-hidden rounded-[10px] border border-border/70 bg-card p-4 shadow-sm space-y-3">
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs text-muted-foreground">
                 {t("settings.oneClickInstallHint")}

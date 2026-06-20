@@ -7,8 +7,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { isMac, isWindows, isLinux } from "@/lib/platform";
+import { SettingRow } from "./SettingRow";
 
-// Terminal options per platform
 const MACOS_TERMINALS = [
   { value: "terminal", labelKey: "settings.terminal.options.macos.terminal" },
   { value: "iterm2", labelKey: "settings.terminal.options.macos.iterm2" },
@@ -44,32 +44,17 @@ const LINUX_TERMINALS = [
   { value: "ghostty", labelKey: "settings.terminal.options.linux.ghostty" },
 ] as const;
 
-// Get terminals for the current platform
 function getTerminalOptions() {
-  if (isMac()) {
-    return MACOS_TERMINALS;
-  }
-  if (isWindows()) {
-    return WINDOWS_TERMINALS;
-  }
-  if (isLinux()) {
-    return LINUX_TERMINALS;
-  }
-  // Fallback to macOS options
+  if (isMac()) return MACOS_TERMINALS;
+  if (isWindows()) return WINDOWS_TERMINALS;
+  if (isLinux()) return LINUX_TERMINALS;
   return MACOS_TERMINALS;
 }
 
-// Get default terminal for the current platform
 function getDefaultTerminal(): string {
-  if (isMac()) {
-    return "terminal";
-  }
-  if (isWindows()) {
-    return "cmd";
-  }
-  if (isLinux()) {
-    return "gnome-terminal";
-  }
+  if (isMac()) return "terminal";
+  if (isWindows()) return "cmd";
+  if (isLinux()) return "gnome-terminal";
   return "terminal";
 }
 
@@ -82,33 +67,30 @@ export function TerminalSettings({ value, onChange }: TerminalSettingsProps) {
   const { t } = useTranslation();
   const terminals = getTerminalOptions();
   const defaultTerminal = getDefaultTerminal();
-
-  // Use value or default
   const currentValue = value || defaultTerminal;
 
   return (
-    <section className="space-y-2">
-      <header className="space-y-1">
-        <h3 className="text-sm font-medium">{t("settings.terminal.title")}</h3>
-        <p className="text-xs text-muted-foreground">
-          {t("settings.terminal.description")}
-        </p>
-      </header>
+    <SettingRow title={t("settings.terminal.title")}>
       <Select value={currentValue} onValueChange={onChange}>
-        <SelectTrigger className="w-[200px]">
+        <SelectTrigger className="h-8 w-[180px] rounded-md border-border/80 bg-background text-xs shadow-none">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
           {terminals.map((terminal) => (
-            <SelectItem key={terminal.value} value={terminal.value}>
+            <SelectItem
+              key={terminal.value}
+              value={terminal.value}
+              className="text-xs"
+            >
               {t(terminal.labelKey)}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      <p className="text-xs text-muted-foreground">
-        {t("settings.terminal.fallbackHint")}
-      </p>
-    </section>
+    </SettingRow>
   );
+}
+
+export function getTerminalFooter(t: (key: string) => string): string {
+  return `${t("settings.terminal.description")} ${t("settings.terminal.fallbackHint")}`;
 }

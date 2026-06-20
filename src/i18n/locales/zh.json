@@ -327,6 +327,13 @@
     "title": "设置",
     "general": "通用",
     "tabGeneral": "通用",
+    "sections": {
+      "appearance": "外观",
+      "apps": "应用",
+      "skills": "Skills",
+      "integration": "认证与集成",
+      "system": "系统"
+    },
     "tabAuth": "认证",
     "tabAdvanced": "高级",
     "tabProxy": "路由",

@@ -229,9 +229,22 @@ pub async fn install_update_and_restart(app: AppHandle) -> Result<bool, String> 
         return Ok(true);
     }
 
-    #[cfg(not(target_os = "windows"))]
+    #[cfg(target_os = "macos")]
     {
-        // macOS/Linux install() 会返回；先安装，避免安装失败时误停代理/撤回接管。
+        // macOS install() 会原地替换 .app bundle。安装成功后直接交给 Tauri 默认重启流程。
+        // 不要在这里执行自定义 cleanup：RunEvent::ExitRequested 对 RESTART_EXIT_CODE
+        // 已经有专门路径会避开异步清理，防止更新已安装后旧进程卡死、不再重启。
+        update
+            .install(bytes)
+            .map_err(|e| format!("安装更新失败: {e}"))?;
+
+        log::info!("应用更新安装完成，正在重启应用");
+        app.restart();
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        // Linux install() 会返回；先安装，避免安装失败时误停代理/撤回接管。
         update
             .install(bytes)
             .map_err(|e| format!("安装更新失败: {e}"))?;

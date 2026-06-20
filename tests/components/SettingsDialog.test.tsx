@@ -255,7 +255,7 @@ const renderSettingsPage = (
   });
   return render(
     <QueryClientProvider client={client}>
-      <SettingsPage open={true} onOpenChange={vi.fn()} {...props} />
+      <SettingsPage onClose={vi.fn()} {...props} />
     </QueryClientProvider>,
   );
 };
@@ -293,7 +293,7 @@ describe("SettingsPage Component", () => {
     expect(document.querySelector(".animate-spin")).toBeInTheDocument();
   });
 
-  it("should reset import/export status when dialog transitions to open", () => {
+  it("should reset import/export status when defaultTab changes", () => {
     const client = new QueryClient({
       defaultOptions: {
         queries: { retry: false },
@@ -301,7 +301,7 @@ describe("SettingsPage Component", () => {
     });
     const { rerender } = render(
       <QueryClientProvider client={client}>
-        <SettingsPage open={false} onOpenChange={vi.fn()} />
+        <SettingsPage defaultTab="general" onClose={vi.fn()} />
       </QueryClientProvider>,
     );
 
@@ -309,7 +309,7 @@ describe("SettingsPage Component", () => {
 
     rerender(
       <QueryClientProvider client={client}>
-        <SettingsPage open={true} onOpenChange={vi.fn()} />
+        <SettingsPage defaultTab="about" onClose={vi.fn()} />
       </QueryClientProvider>,
     );
 
@@ -317,13 +317,12 @@ describe("SettingsPage Component", () => {
   });
 
   it("should render general and advanced tabs and trigger child callbacks", () => {
-    const onOpenChange = vi.fn();
     // 设置 selectedFile 后，按钮显示 settings.import（可执行导入）
     importExportMock = createImportExportMock({
       selectedFile: "/tmp/config.json",
     });
 
-    renderSettingsPage({ onOpenChange });
+    renderSettingsPage();
 
     expect(screen.getByText("language:zh")).toBeInTheDocument();
     expect(screen.getByText("theme-settings")).toBeInTheDocument();
@@ -387,11 +386,10 @@ describe("SettingsPage Component", () => {
     expect(onImportSuccess).toHaveBeenCalledTimes(1);
   });
 
-  it("should call saveSettings and close dialog when clicking save", async () => {
-    const onOpenChange = vi.fn();
+  it("should call saveSettings and run cleanup when clicking save", async () => {
     importExportMock = createImportExportMock();
 
-    renderSettingsPage({ onOpenChange });
+    renderSettingsPage();
 
     // 保存按钮在 advanced tab 中
     fireEvent.click(screen.getByText("settings.tabAdvanced"));
@@ -402,7 +400,6 @@ describe("SettingsPage Component", () => {
       expect(importExportMock.clearSelection).toHaveBeenCalledTimes(1);
       expect(importExportMock.resetStatus).toHaveBeenCalledTimes(2);
       expect(settingsMock.acknowledgeRestart).toHaveBeenCalledTimes(1);
-      expect(onOpenChange).toHaveBeenCalledWith(false);
     });
   });
 
@@ -428,11 +425,10 @@ describe("SettingsPage Component", () => {
     });
   });
 
-  it("should allow postponing restart and close dialog without restarting", async () => {
-    const onOpenChange = vi.fn();
+  it("should allow postponing restart without restarting", async () => {
     settingsMock = createSettingsMock({ requiresRestart: true });
 
-    renderSettingsPage({ onOpenChange });
+    renderSettingsPage();
 
     expect(
       await screen.findByText("settings.restartRequired"),
@@ -441,7 +437,6 @@ describe("SettingsPage Component", () => {
     fireEvent.click(screen.getByText("settings.restartLater"));
 
     await waitFor(() => {
-      expect(onOpenChange).toHaveBeenCalledWith(false);
       expect(settingsMock.acknowledgeRestart).toHaveBeenCalledTimes(1);
     });
 

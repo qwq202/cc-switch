@@ -378,7 +378,7 @@ export function ProviderList({
         items={filteredProviders.map((provider) => provider.id)}
         strategy={verticalListSortingStrategy}
       >
-        <div className="space-y-3">
+        <div className="border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-[0_1px_3px_rgba(0,0,0,0.01)] rounded-xl overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-900">
           {filteredProviders.map((provider) => {
             const isOmo = provider.category === "omo";
             const isOmoSlim = provider.category === "omo-slim";

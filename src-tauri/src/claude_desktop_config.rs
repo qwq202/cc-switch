@@ -270,15 +270,8 @@ fn stored_disable_auto_updates(db: &Database) -> bool {
         .is_some_and(|value| value.trim().eq_ignore_ascii_case("true"))
 }
 
-fn configured_disable_auto_updates(db: &Database, paths: &ClaudeDesktopPaths) -> bool {
-    active_profile_disable_auto_updates(paths).unwrap_or_else(|| stored_disable_auto_updates(db))
-}
-
-fn active_profile_disable_auto_updates(paths: &ClaudeDesktopPaths) -> Option<bool> {
-    let profile_path = active_profile_path(paths);
-    read_json_or_empty(&profile_path)
-        .ok()
-        .and_then(|profile| profile.get("disableAutoUpdates").and_then(Value::as_bool))
+fn configured_disable_auto_updates(db: &Database, _paths: &ClaudeDesktopPaths) -> bool {
+    stored_disable_auto_updates(db)
 }
 
 fn write_disable_auto_updates_to_active_profile(
@@ -1617,10 +1610,10 @@ mod tests {
     }
 
     #[test]
-    fn claude_desktop_apply_preserves_existing_profile_disable_auto_updates_flag() {
+    fn claude_desktop_apply_defaults_disable_auto_updates_off() {
         let temp = TempDir::new().expect("tempdir");
         let paths = test_paths(temp.path());
-        let provider = direct_provider("direct-preserve-no-updates");
+        let provider = direct_provider("direct-default-updates");
         let db = test_db();
         write_json_file(&paths.profile_path, &json!({ "disableAutoUpdates": true }))
             .expect("seed profile");
@@ -1628,7 +1621,7 @@ mod tests {
         apply_provider_to_paths(&db, &provider, &paths).expect("apply provider");
 
         let profile: Value = read_json_file(&paths.profile_path).expect("read profile");
-        assert_eq!(profile["disableAutoUpdates"], json!(true));
+        assert_eq!(profile["disableAutoUpdates"], json!(false));
     }
 
     #[test]

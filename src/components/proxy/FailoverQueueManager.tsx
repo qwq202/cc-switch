@@ -1,17 +1,6 @@
-/**
- * 故障转移队列管理组件
- *
- * 允许用户管理代理模式下的故障转移队列，支持：
- * - 添加/移除供应商
- * - 队列顺序基于首页供应商列表的 sort_index
- */
-
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
-import { Plus, Trash2, Loader2, Info, AlertTriangle } from "lucide-react";
+import { Plus, Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
@@ -20,7 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
+import { ToggleRow } from "@/components/ui/toggle-row";
+import { SettingSection } from "@/components/settings/SettingSection";
 import type { FailoverQueueItem } from "@/types/proxy";
 import type { AppId } from "@/lib/api";
 import {
@@ -31,6 +21,9 @@ import {
   useAutoFailoverEnabled,
   useSetAutoFailoverEnabled,
 } from "@/lib/query/failover";
+import { toast } from "sonner";
+import { useState } from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface FailoverQueueManagerProps {
   appType: AppId;
@@ -44,11 +37,9 @@ export function FailoverQueueManager({
   const { t } = useTranslation();
   const [selectedProviderId, setSelectedProviderId] = useState<string>("");
 
-  // 故障转移开关状态（每个应用独立）
   const { data: isFailoverEnabled = false } = useAutoFailoverEnabled(appType);
   const setFailoverEnabled = useSetAutoFailoverEnabled();
 
-  // 查询数据
   const {
     data: queue,
     isLoading: isQueueLoading,
@@ -57,16 +48,13 @@ export function FailoverQueueManager({
   const { data: availableProviders, isLoading: isProvidersLoading } =
     useAvailableProvidersForFailover(appType);
 
-  // Mutations
   const addToQueue = useAddToFailoverQueue();
   const removeFromQueue = useRemoveFromFailoverQueue();
 
-  // 切换故障转移开关
   const handleToggleFailover = (enabled: boolean) => {
     setFailoverEnabled.mutate({ appType, enabled });
   };
 
-  // 添加供应商到队列
   const handleAddProvider = async () => {
     if (!selectedProviderId) return;
 
@@ -87,7 +75,6 @@ export function FailoverQueueManager({
     }
   };
 
-  // 从队列移除供应商
   const handleRemoveProvider = async (providerId: string) => {
     try {
       await removeFromQueue.mutateAsync({ appType, providerId });
@@ -106,8 +93,8 @@ export function FailoverQueueManager({
 
   if (isQueueLoading) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
       </div>
     );
   }
@@ -121,111 +108,97 @@ export function FailoverQueueManager({
     );
   }
 
+  const queueFooter = [
+    t(
+      "proxy.failoverQueue.info",
+      "队列顺序与首页供应商列表顺序一致。当请求失败时，系统会按顺序依次尝试队列中的供应商。",
+    ),
+    queue && queue.length > 0
+      ? t(
+          "proxy.failoverQueue.orderHint",
+          "队列顺序与首页供应商列表顺序一致，可在首页拖拽调整顺序。",
+        )
+      : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <div className="space-y-4">
-      {/* 自动故障转移开关 */}
-      <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border/50">
-        <div className="space-y-0.5">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">
-              {t("proxy.failover.autoSwitch", {
-                defaultValue: "自动故障转移",
-              })}
-            </span>
-            {isFailoverEnabled && (
-              <span className="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
-                {t("common.enabled", { defaultValue: "已开启" })}
-              </span>
-            )}
-          </div>
-          <p className="text-xs text-muted-foreground">
-            {t("proxy.failover.autoSwitchDescription", {
-              defaultValue:
-                "开启后将立即切换到队列 P1，并在请求失败时自动切换到队列中的下一个供应商",
-            })}
-          </p>
-        </div>
-        <Switch
+      <SettingSection footer={queueFooter}>
+        <ToggleRow
+          variant="plain"
+          title={t("proxy.failover.autoSwitch", {
+            defaultValue: "自动故障转移",
+          })}
+          description={t("proxy.failover.autoSwitchDescription", {
+            defaultValue:
+              "开启后将立即切换到队列 P1，并在请求失败时自动切换到队列中的下一个供应商",
+          })}
           checked={isFailoverEnabled}
           onCheckedChange={handleToggleFailover}
           disabled={disabled || setFailoverEnabled.isPending}
         />
-      </div>
 
-      {/* 说明信息 */}
-      <Alert className="border-blue-500/40 bg-blue-500/10">
-        <Info className="h-4 w-4" />
-        <AlertDescription className="text-sm">
-          {t(
-            "proxy.failoverQueue.info",
-            "队列顺序与首页供应商列表顺序一致。当请求失败时，系统会按顺序依次尝试队列中的供应商。",
-          )}
-        </AlertDescription>
-      </Alert>
-
-      {/* 添加供应商 */}
-      <div className="flex items-center gap-2">
-        <Select
-          value={selectedProviderId}
-          onValueChange={setSelectedProviderId}
-          disabled={disabled || isProvidersLoading}
-        >
-          <SelectTrigger className="flex-1">
-            <SelectValue
-              placeholder={t(
-                "proxy.failoverQueue.selectProvider",
-                "选择供应商添加到队列",
+        <div className="flex items-center gap-2 px-4 py-3">
+          <Select
+            value={selectedProviderId}
+            onValueChange={setSelectedProviderId}
+            disabled={disabled || isProvidersLoading}
+          >
+            <SelectTrigger className="h-8 flex-1 text-xs">
+              <SelectValue
+                placeholder={t(
+                  "proxy.failoverQueue.selectProvider",
+                  "选择供应商添加到队列",
+                )}
+              />
+            </SelectTrigger>
+            <SelectContent>
+              {availableProviders?.map((provider) => (
+                <SelectItem key={provider.id} value={provider.id}>
+                  {provider.name}
+                  {provider.notes && (
+                    <span className="ml-1 text-xs text-muted-foreground">
+                      ({provider.notes})
+                    </span>
+                  )}
+                </SelectItem>
+              ))}
+              {(!availableProviders || availableProviders.length === 0) && (
+                <div className="px-2 py-4 text-center text-xs text-muted-foreground">
+                  {t(
+                    "proxy.failoverQueue.noAvailableProviders",
+                    "没有可添加的供应商",
+                  )}
+                </div>
               )}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {availableProviders?.map((provider) => (
-              <SelectItem key={provider.id} value={provider.id}>
-                {provider.name}
-                {provider.notes && (
-                  <span className="ml-1 text-xs text-muted-foreground">
-                    ({provider.notes})
-                  </span>
-                )}
-              </SelectItem>
-            ))}
-            {(!availableProviders || availableProviders.length === 0) && (
-              <div className="px-2 py-4 text-center text-sm text-muted-foreground">
-                {t(
-                  "proxy.failoverQueue.noAvailableProviders",
-                  "没有可添加的供应商",
-                )}
-              </div>
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={() => void handleAddProvider()}
+            disabled={disabled || !selectedProviderId || addToQueue.isPending}
+            size="icon"
+            variant="outline"
+            className="h-8 w-8 shrink-0"
+          >
+            {addToQueue.isPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Plus className="h-3.5 w-3.5" />
             )}
-          </SelectContent>
-        </Select>
-        <Button
-          onClick={handleAddProvider}
-          disabled={disabled || !selectedProviderId || addToQueue.isPending}
-          size="icon"
-          variant="outline"
-        >
-          {addToQueue.isPending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Plus className="h-4 w-4" />
-          )}
-        </Button>
-      </div>
+          </Button>
+        </div>
 
-      {/* 队列列表 */}
-      {!queue || queue.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-muted-foreground/40 p-8 text-center">
-          <p className="text-sm text-muted-foreground">
+        {!queue || queue.length === 0 ? (
+          <div className="px-4 py-6 text-center text-[12px] text-muted-foreground">
             {t(
               "proxy.failoverQueue.empty",
               "故障转移队列为空。添加供应商以启用自动故障转移。",
             )}
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {queue.map((item, index) => (
+          </div>
+        ) : (
+          queue.map((item, index) => (
             <QueueItem
               key={item.providerId}
               item={item}
@@ -234,19 +207,9 @@ export function FailoverQueueManager({
               onRemove={handleRemoveProvider}
               isRemoving={removeFromQueue.isPending}
             />
-          ))}
-        </div>
-      )}
-
-      {/* 队列说明 */}
-      {queue && queue.length > 0 && (
-        <p className="text-xs text-muted-foreground">
-          {t(
-            "proxy.failoverQueue.orderHint",
-            "队列顺序与首页供应商列表顺序一致，可在首页拖拽调整顺序。",
-          )}
-        </p>
-      )}
+          ))
+        )}
+      </SettingSection>
     </div>
   );
 }
@@ -269,41 +232,32 @@ function QueueItem({
   const { t } = useTranslation();
 
   return (
-    <div
-      className={cn(
-        "flex items-center gap-3 rounded-lg border bg-card p-3 transition-colors",
-      )}
-    >
-      {/* 序号 */}
-      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-muted text-xs font-medium">
+    <div className="flex items-center gap-3 px-4 py-2.5">
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground">
         {index + 1}
-      </div>
-
-      {/* 供应商名称 */}
-      <div className="flex-1 min-w-0">
-        <span className="text-sm font-medium truncate block">
+      </span>
+      <div className="min-w-0 flex-1">
+        <span className="block truncate text-[13px] font-medium text-foreground">
           {item.providerName}
           {item.providerNotes && (
-            <span className="ml-1 text-xs text-muted-foreground">
+            <span className="ml-1 font-normal text-muted-foreground">
               ({item.providerNotes})
             </span>
           )}
         </span>
       </div>
-
-      {/* 删除按钮 */}
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8 text-muted-foreground hover:text-destructive"
-        onClick={() => onRemove(item.providerId)}
+        className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+        onClick={() => void onRemove(item.providerId)}
         disabled={disabled || isRemoving}
         aria-label={t("common.delete", "删除")}
       >
         {isRemoving ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-3.5 w-3.5" />
         )}
       </Button>
     </div>

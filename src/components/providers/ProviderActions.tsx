@@ -11,11 +11,19 @@ import {
   Terminal,
   Trash2,
   Zap,
+  MoreHorizontal,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { AppId } from "@/lib/api";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 interface ProviderActionsProps {
   appId?: AppId;
@@ -82,7 +90,6 @@ export function ProviderActions({
   onSetAsDefault,
 }: ProviderActionsProps) {
   const { t } = useTranslation();
-  const iconButtonClass = "h-8 w-8 p-1";
 
   // 累加模式应用（OpenCode 非 OMO / OpenClaw / Hermes）
   const isAdditiveMode =
@@ -222,9 +229,6 @@ export function ProviderActions({
 
   const canDelete =
     !isReadOnly && (isOmo || isAdditiveMode ? true : !isCurrent);
-  const readOnlyHint = t("provider.managedByHermesHint", {
-    defaultValue: "由 Hermes 管理，请在 Hermes Web UI 中编辑",
-  });
 
   return (
     <div className="flex items-center gap-1.5">
@@ -280,92 +284,90 @@ export function ProviderActions({
         </Button>
       </span>
 
-      <div className="flex items-center gap-1">
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={isReadOnly ? undefined : onEdit}
-          disabled={isReadOnly}
-          title={isReadOnly ? readOnlyHint : t("common.edit")}
-          className={cn(
-            iconButtonClass,
-            isReadOnly && "opacity-40 cursor-not-allowed text-muted-foreground",
-          )}
-        >
-          <Edit className="h-4 w-4" />
-        </Button>
-
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={onDuplicate}
-          title={t("provider.duplicate")}
-          className={iconButtonClass}
-        >
-          <Copy className="h-4 w-4" />
-        </Button>
-
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={onTest || undefined}
-          disabled={isTesting}
-          title={t("provider.connectivityCheck", "检测连通")}
-          className={cn(
-            iconButtonClass,
-            !onTest && "opacity-40 cursor-not-allowed text-muted-foreground",
-          )}
-        >
-          {isTesting ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Activity className="h-4 w-4" />
-          )}
-        </Button>
-
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={onConfigureUsage || undefined}
-          title={t("provider.configureUsage")}
-          className={cn(
-            iconButtonClass,
-            !onConfigureUsage &&
-              "opacity-40 cursor-not-allowed text-muted-foreground",
-          )}
-        >
-          <BarChart3 className="h-4 w-4" />
-        </Button>
-
-        {onOpenTerminal && (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button
             size="icon"
             variant="ghost"
-            onClick={onOpenTerminal}
-            title={t("provider.openTerminal", "打开终端")}
-            className={cn(
-              iconButtonClass,
-              "hover:text-emerald-600 dark:hover:text-emerald-400",
-            )}
+            className="h-8 w-8 text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-50 hover:bg-zinc-900/5 dark:hover:bg-white/5 rounded-lg transition-colors flex-shrink-0"
           >
-            <Terminal className="h-4 w-4" />
+            {isTesting ? (
+              <Loader2 className="h-4 w-4 animate-spin text-zinc-500" />
+            ) : (
+              <MoreHorizontal className="h-4 w-4" />
+            )}
           </Button>
-        )}
-
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={canDelete ? onDelete : undefined}
-          title={isReadOnly ? readOnlyHint : t("common.delete")}
-          className={cn(
-            iconButtonClass,
-            canDelete && "hover:text-red-500 dark:hover:text-red-400",
-            !canDelete && "opacity-40 cursor-not-allowed text-muted-foreground",
-          )}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-44 bg-white dark:bg-zinc-950 border border-zinc-200/80 dark:border-zinc-800 p-1.5 shadow-lg rounded-xl"
         >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
+          <DropdownMenuItem
+            onClick={isReadOnly ? undefined : onEdit}
+            disabled={isReadOnly}
+            className="flex items-center gap-2 px-2.5 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg cursor-pointer focus:bg-zinc-50 dark:focus:bg-zinc-900"
+          >
+            <Edit className="h-4 w-4 text-zinc-400" />
+            <span>{t("common.edit")}</span>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={onDuplicate}
+            className="flex items-center gap-2 px-2.5 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg cursor-pointer focus:bg-zinc-50 dark:focus:bg-zinc-900"
+          >
+            <Copy className="h-4 w-4 text-zinc-400" />
+            <span>{t("provider.duplicate")}</span>
+          </DropdownMenuItem>
+
+          {onTest && (
+            <DropdownMenuItem
+              onClick={onTest}
+              disabled={isTesting}
+              className="flex items-center gap-2 px-2.5 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg cursor-pointer focus:bg-zinc-50 dark:focus:bg-zinc-900"
+            >
+              {isTesting ? (
+                <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
+              ) : (
+                <Activity className="h-4 w-4 text-zinc-400" />
+              )}
+              <span>{t("provider.connectivityCheck", "检测连通")}</span>
+            </DropdownMenuItem>
+          )}
+
+          {onConfigureUsage && (
+            <DropdownMenuItem
+              onClick={onConfigureUsage}
+              className="flex items-center gap-2 px-2.5 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg cursor-pointer focus:bg-zinc-50 dark:focus:bg-zinc-900"
+            >
+              <BarChart3 className="h-4 w-4 text-zinc-400" />
+              <span>{t("provider.configureUsage")}</span>
+            </DropdownMenuItem>
+          )}
+
+          {onOpenTerminal && (
+            <DropdownMenuItem
+              onClick={onOpenTerminal}
+              className="flex items-center gap-2 px-2.5 py-2 text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-900 rounded-lg cursor-pointer focus:bg-zinc-50 dark:focus:bg-zinc-900"
+            >
+              <Terminal className="h-4 w-4 text-zinc-400" />
+              <span>{t("provider.openTerminal", "打开终端")}</span>
+            </DropdownMenuItem>
+          )}
+
+          {canDelete && (
+            <>
+              <DropdownMenuSeparator className="my-1 border-t border-zinc-100 dark:border-zinc-900" />
+              <DropdownMenuItem
+                onClick={onDelete}
+                className="flex items-center gap-2 px-2.5 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg cursor-pointer focus:bg-red-50 dark:focus:bg-red-950/30"
+              >
+                <Trash2 className="h-4 w-4 text-red-400" />
+                <span>{t("common.delete")}</span>
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }

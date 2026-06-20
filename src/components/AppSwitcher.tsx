@@ -16,6 +16,7 @@ interface AppSwitcherProps {
   onSwitch: (app: AppId) => void;
   visibleApps?: VisibleApps;
   compact?: boolean;
+  orientation?: "horizontal" | "vertical";
 }
 
 const ALL_APPS: AppId[] = [
@@ -34,6 +35,7 @@ export function AppSwitcher({
   onSwitch,
   visibleApps,
   compact,
+  orientation = "horizontal",
 }: AppSwitcherProps) {
   const handleSwitch = (app: AppId) => {
     if (app === activeApp) return;
@@ -67,7 +69,13 @@ export function AppSwitcher({
   });
 
   return (
-    <div className="inline-flex bg-muted rounded-xl p-1 gap-1">
+    <div
+      className={cn(
+        orientation === "vertical"
+          ? "flex flex-col w-full gap-1 bg-transparent border-0 p-0"
+          : "inline-flex bg-zinc-100/80 dark:bg-zinc-800/80 backdrop-blur-md p-1 gap-1 border border-black/5 dark:border-white/5 rounded-full",
+      )}
+    >
       {appsToShow.map((app) => {
         const badgeConfig = APP_BADGE_ICON[app];
         const BadgeIcon = badgeConfig?.icon;
@@ -78,13 +86,30 @@ export function AppSwitcher({
             type="button"
             onClick={() => handleSwitch(app)}
             className={cn(
-              "group inline-flex items-center px-3 h-8 rounded-md text-sm font-medium transition-all duration-200",
-              isActive
-                ? "bg-background text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-background/50",
+              "group relative inline-flex items-center px-3 font-medium transition-all duration-300 ease-out",
+              orientation === "vertical"
+                ? "w-full justify-start h-10 rounded-xl text-[15px]"
+                : "h-8 rounded-full text-sm",
+              orientation === "vertical"
+                ? isActive
+                  ? "bg-zinc-900/5 dark:bg-zinc-100/10 text-zinc-900 dark:text-zinc-100 pl-4"
+                  : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-900/5 dark:text-zinc-400 dark:hover:text-zinc-100 dark:hover:bg-zinc-100/10 pl-4"
+                : isActive
+                  ? "bg-white text-zinc-900 shadow-[0_2px_8px_rgb(0,0,0,0.08)] dark:bg-zinc-700 dark:text-zinc-50 border border-black/5 dark:border-white/5"
+                  : "text-zinc-500 hover:text-zinc-900 hover:bg-black/5 dark:text-zinc-400 dark:hover:text-zinc-50 dark:hover:bg-white/5",
             )}
           >
-            <span className="relative inline-flex shrink-0">
+            {orientation === "vertical" && isActive && (
+              <span className="absolute left-0 top-3 bottom-3 w-0.5 bg-zinc-900 dark:bg-zinc-100 rounded-full" />
+            )}
+            <span
+              className={cn(
+                "relative inline-flex shrink-0 transition-all duration-200",
+                orientation === "vertical" &&
+                  !isActive &&
+                  "opacity-60 grayscale-[20%] group-hover:opacity-100 group-hover:grayscale-0",
+              )}
+            >
               <ProviderIcon
                 icon={appIconName[app]}
                 name={appDisplayName[app]}
@@ -93,10 +118,10 @@ export function AppSwitcher({
               {BadgeIcon && (
                 <span
                   className={cn(
-                    "absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-[3px] border h-[11px] w-[11px]",
+                    "absolute -bottom-0.5 -right-0.5 flex items-center justify-center rounded-full border h-[11px] w-[11px]",
                     isActive
-                      ? "bg-background border-border text-foreground"
-                      : "bg-muted border-background text-muted-foreground group-hover:bg-background group-hover:text-foreground",
+                      ? "bg-white border-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                      : "bg-zinc-100 border-zinc-200 text-zinc-400 group-hover:bg-zinc-200 group-hover:text-zinc-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-500",
                   )}
                   aria-hidden="true"
                 >
@@ -114,10 +139,19 @@ export function AppSwitcher({
             </span>
             <span
               className={cn(
-                "transition-all duration-200 whitespace-nowrap overflow-hidden",
-                compact
+                "transition-all duration-200 whitespace-nowrap overflow-hidden text-left",
+                orientation === "vertical" ? "flex-1 ml-3" : "",
+                orientation === "vertical" && !isActive
+                  ? "text-zinc-500 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-zinc-100"
+                  : "",
+                orientation === "vertical" && isActive
+                  ? "text-zinc-900 dark:text-zinc-100 font-semibold"
+                  : "",
+                compact && orientation !== "vertical"
                   ? "max-w-0 opacity-0 ml-0"
-                  : "max-w-[120px] opacity-100 ml-2",
+                  : orientation !== "vertical"
+                    ? "max-w-[120px] opacity-100 ml-2"
+                    : "",
               )}
             >
               {appDisplayName[app]}

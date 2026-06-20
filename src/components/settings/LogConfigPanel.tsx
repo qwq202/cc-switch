@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { ToggleRow } from "@/components/ui/toggle-row";
 import {
   Select,
   SelectContent,
@@ -10,6 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { SettingRow } from "@/components/settings/SettingRow";
+import { SettingSection } from "@/components/settings/SettingSection";
 import { settingsApi, type LogConfig } from "@/lib/api/settings";
 
 const LOG_LEVELS = ["error", "warn", "info", "debug", "trace"] as const;
@@ -45,27 +46,18 @@ export function LogConfigPanel() {
   if (isLoading) return null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label>{t("settings.advanced.logConfig.enabled")}</Label>
-          <p className="text-xs text-muted-foreground">
-            {t("settings.advanced.logConfig.enabledDescription")}
-          </p>
-        </div>
-        <Switch
-          checked={config.enabled}
-          onCheckedChange={(checked) => handleChange({ enabled: checked })}
-        />
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label>{t("settings.advanced.logConfig.level")}</Label>
-          <p className="text-xs text-muted-foreground">
-            {t("settings.advanced.logConfig.levelDescription")}
-          </p>
-        </div>
+    <SettingSection footer={t("settings.advanced.logConfig.levelHint")}>
+      <ToggleRow
+        variant="plain"
+        title={t("settings.advanced.logConfig.enabled")}
+        description={t("settings.advanced.logConfig.enabledDescription")}
+        checked={config.enabled}
+        onCheckedChange={(checked) => handleChange({ enabled: checked })}
+      />
+      <SettingRow
+        title={t("settings.advanced.logConfig.level")}
+        description={t("settings.advanced.logConfig.levelDescription")}
+      >
         <Select
           value={config.level}
           disabled={!config.enabled}
@@ -73,47 +65,18 @@ export function LogConfigPanel() {
             handleChange({ level: value as LogConfig["level"] })
           }
         >
-          <SelectTrigger className="w-[120px]">
+          <SelectTrigger className="h-8 w-[120px] text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
             {LOG_LEVELS.map((level) => (
-              <SelectItem key={level} value={level}>
+              <SelectItem key={level} value={level} className="text-xs">
                 {t(`settings.advanced.logConfig.levels.${level}`)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-      </div>
-
-      {/* 日志级别说明 */}
-      <div className="rounded-lg bg-muted/50 p-4 text-xs space-y-1.5">
-        <p className="font-medium text-muted-foreground mb-2">
-          {t("settings.advanced.logConfig.levelHint")}
-        </p>
-        <div className="grid gap-1 text-muted-foreground">
-          <p>
-            <span className="font-mono text-red-500">error</span> -{" "}
-            {t("settings.advanced.logConfig.levelDesc.error")}
-          </p>
-          <p>
-            <span className="font-mono text-orange-500">warn</span> -{" "}
-            {t("settings.advanced.logConfig.levelDesc.warn")}
-          </p>
-          <p>
-            <span className="font-mono text-blue-500">info</span> -{" "}
-            {t("settings.advanced.logConfig.levelDesc.info")}
-          </p>
-          <p>
-            <span className="font-mono text-green-500">debug</span> -{" "}
-            {t("settings.advanced.logConfig.levelDesc.debug")}
-          </p>
-          <p>
-            <span className="font-mono text-gray-500">trace</span> -{" "}
-            {t("settings.advanced.logConfig.levelDesc.trace")}
-          </p>
-        </div>
-      </div>
-    </div>
+      </SettingRow>
+    </SettingSection>
   );
 }

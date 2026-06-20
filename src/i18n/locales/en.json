@@ -327,6 +327,13 @@
     "title": "Settings",
     "general": "General",
     "tabGeneral": "General",
+    "sections": {
+      "appearance": "Appearance",
+      "apps": "Apps",
+      "skills": "Skills",
+      "integration": "Auth & Integration",
+      "system": "System"
+    },
     "tabAuth": "Auth",
     "tabAdvanced": "Advanced",
     "tabProxy": "Routing",

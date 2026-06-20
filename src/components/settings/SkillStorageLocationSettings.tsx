@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { SettingRow } from "./SettingRow";
 import { skillsApi, type MigrationResult } from "@/lib/api/skills";
 import type { SkillStorageLocation } from "@/types";
 
@@ -36,7 +37,7 @@ export function SkillStorageLocationSettings({
     if (installedCount > 0) {
       setPendingTarget(target);
     } else {
-      doMigrate(target);
+      void doMigrate(target);
     }
   };
 
@@ -68,41 +69,29 @@ export function SkillStorageLocationSettings({
   };
 
   return (
-    <section className="space-y-2">
-      <header className="space-y-1">
-        <h3 className="text-sm font-medium">
-          {t("settings.skillStorage.title")}
-        </h3>
-        <p className="text-xs text-muted-foreground">
-          {t("settings.skillStorage.description")}
-        </p>
-      </header>
-      <div className="inline-flex gap-1 rounded-md border border-border-default bg-background p-1">
-        <StorageButton
-          active={value === "cc_switch"}
-          disabled={isMigrating}
-          onClick={() => handleSelect("cc_switch")}
-        >
-          {t("settings.skillStorage.ccSwitch")}
-        </StorageButton>
-        <StorageButton
-          active={value === "unified"}
-          disabled={isMigrating}
-          onClick={() => handleSelect("unified")}
-        >
-          {isMigrating && value !== "unified" ? (
-            <Loader2 size={14} className="mr-1 animate-spin" />
-          ) : null}
-          {t("settings.skillStorage.unified")}
-        </StorageButton>
-      </div>
-      <p className="text-xs text-muted-foreground">
-        {value === "unified"
-          ? t("settings.skillStorage.unifiedHint")
-          : t("settings.skillStorage.ccSwitchHint")}
-      </p>
+    <>
+      <SettingRow title={t("settings.skillStorage.title")}>
+        <div className="inline-flex flex-shrink-0 gap-0.5 rounded-md bg-muted/70 p-0.5">
+          <StorageButton
+            active={value === "cc_switch"}
+            disabled={isMigrating}
+            onClick={() => handleSelect("cc_switch")}
+          >
+            {t("settings.skillStorage.ccSwitch")}
+          </StorageButton>
+          <StorageButton
+            active={value === "unified"}
+            disabled={isMigrating}
+            onClick={() => handleSelect("unified")}
+          >
+            {isMigrating && value !== "unified" ? (
+              <Loader2 size={12} className="mr-1 animate-spin" />
+            ) : null}
+            {t("settings.skillStorage.unified")}
+          </StorageButton>
+        </div>
+      </SettingRow>
 
-      {/* 迁移确认对话框 */}
       <Dialog
         open={pendingTarget !== null}
         onOpenChange={(open) => {
@@ -122,13 +111,15 @@ export function SkillStorageLocationSettings({
             <Button variant="outline" onClick={() => setPendingTarget(null)}>
               {t("common.cancel")}
             </Button>
-            <Button onClick={() => pendingTarget && doMigrate(pendingTarget)}>
+            <Button
+              onClick={() => pendingTarget && void doMigrate(pendingTarget)}
+            >
               {t("common.confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </section>
+    </>
   );
 }
 
@@ -148,18 +139,29 @@ function StorageButton({
   return (
     <Button
       type="button"
+      variant="ghost"
       onClick={onClick}
       disabled={disabled}
-      size="sm"
-      variant={active ? "default" : "ghost"}
       className={cn(
-        "min-w-[96px]",
+        "h-7 min-w-[76px] rounded-[6px] border-none px-3 text-[12px] font-medium shadow-none transition-all",
         active
-          ? "shadow-sm"
-          : "text-muted-foreground hover:text-foreground hover:bg-muted",
+          ? "bg-background text-foreground shadow-sm hover:bg-background dark:bg-blue-600 dark:text-white dark:hover:bg-blue-600"
+          : "bg-transparent text-muted-foreground hover:bg-background/40 hover:text-foreground",
       )}
     >
       {children}
     </Button>
   );
+}
+
+export function getSkillStorageFooter(
+  value: SkillStorageLocation,
+  t: (key: string) => string,
+): string {
+  const hint =
+    value === "unified"
+      ? t("settings.skillStorage.unifiedHint")
+      : t("settings.skillStorage.ccSwitchHint");
+
+  return `${t("settings.skillStorage.description")} ${hint}`;
 }
