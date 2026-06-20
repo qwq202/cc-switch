@@ -4,12 +4,21 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build, for example v3.16.4'
+        required: true
+        type: string
 
 permissions:
   contents: write
 
+env:
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+
 concurrency:
-  group: release-${{ github.ref_name }}
+  group: release-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -27,6 +36,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -188,7 +199,7 @@ jobs:
         run: |
           set -euxo pipefail
           mkdir -p release-assets
-          VERSION="${GITHUB_REF_NAME}"  # e.g., v3.5.0
+          VERSION="${RELEASE_TAG}"  # e.g., v3.5.0
 
           # Locate bundle artifacts
           TAR_GZ=""; APP_PATH=""
@@ -302,7 +313,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force -Path release-assets | Out-Null
-          $VERSION = $env:GITHUB_REF_NAME  # e.g., v3.5.0
+          $VERSION = $env:RELEASE_TAG  # e.g., v3.5.0
           # 仅打包 MSI 安装器 + .sig（用于 Updater）
           $msi = Get-ChildItem -Path 'src-tauri/target/release/bundle/msi' -Recurse -Include *.msi -ErrorAction SilentlyContinue | Select-Object -First 1
           if ($null -eq $msi) {
@@ -353,7 +364,7 @@ jobs:
         run: |
           set -euxo pipefail
           mkdir -p release-assets
-          VERSION="${GITHUB_REF_NAME}"  # e.g., v3.5.0
+          VERSION="${RELEASE_TAG}"  # e.g., v3.5.0
           ARCH="${{ matrix.arch || 'x86_64' }}"
           # Updater artifact: AppImage（含对应 .sig）
           APPIMAGE=$(find src-tauri/target/release/bundle -name "*.AppImage" | head -1 || true)
@@ -431,11 +442,11 @@ jobs:
       - name: Upload Release Assets
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ github.ref_name }}
-          name: CC Switch ${{ github.ref_name }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          name: CC Switch ${{ env.RELEASE_TAG }}
           prerelease: true
           body: |
-            ## CC Switch ${{ github.ref_name }}
+            ## CC Switch ${{ env.RELEASE_TAG }}
 
             🌐 **Only Official Website / 唯一官方网站 / 唯一の公式サイト**: [ccswitch.io](https://ccswitch.io)
 
@@ -443,10 +454,10 @@ jobs:
 
             ### 下载
 
-            - **macOS**: `CC-Switch-${{ github.ref_name }}-macOS.dmg`（推荐）或 `CC-Switch-${{ github.ref_name }}-macOS.zip`（解压即用）
-            - **Windows**: `CC-Switch-${{ github.ref_name }}-Windows.msi`（安装版）或 `CC-Switch-${{ github.ref_name }}-Windows-Portable.zip`（绿色版）
-            - **Linux (x86_64)**: `CC-Switch-${{ github.ref_name }}-Linux-x86_64.AppImage` / `.deb` / `.rpm`
-            - **Linux (ARM64)**: `CC-Switch-${{ github.ref_name }}-Linux-arm64.AppImage` / `.deb` / `.rpm`
+            - **macOS**: `CC-Switch-${{ env.RELEASE_TAG }}-macOS.dmg`（推荐）或 `CC-Switch-${{ env.RELEASE_TAG }}-macOS.zip`（解压即用）
+            - **Windows**: `CC-Switch-${{ env.RELEASE_TAG }}-Windows.msi`（安装版）或 `CC-Switch-${{ env.RELEASE_TAG }}-Windows-Portable.zip`（绿色版）
+            - **Linux (x86_64)**: `CC-Switch-${{ env.RELEASE_TAG }}-Linux-x86_64.AppImage` / `.deb` / `.rpm`
+            - **Linux (ARM64)**: `CC-Switch-${{ env.RELEASE_TAG }}-Linux-arm64.AppImage` / `.deb` / `.rpm`
 
             > `.tar.gz` 为 Tauri updater 自动更新专用，无需手动下载。
 
@@ -473,14 +484,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euxo pipefail
-          TAG="${GITHUB_REF_NAME}"
+          TAG="${RELEASE_TAG}"
           mkdir -p dl
           gh release download "$TAG" --dir dl --repo "$GITHUB_REPOSITORY"
           ls -la dl || true
       - name: Generate latest.json
         env:
           REPO: ${{ github.repository }}
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ env.RELEASE_TAG }}
         run: |
           set -euo pipefail
           VERSION="${TAG#v}"
@@ -551,4 +562,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euxo pipefail
-          gh release upload "$GITHUB_REF_NAME" latest.json --clobber --repo "$GITHUB_REPOSITORY"
+          gh release upload "$RELEASE_TAG" latest.json --clobber --repo "$GITHUB_REPOSITORY"
